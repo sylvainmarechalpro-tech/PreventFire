@@ -687,15 +687,6 @@ def list_zones():
 
 FRONTEND_DIST = BASE.parent / "frontend" / "dist"
 
-@app.route("/api/debug-path")
-def debug_path():
-    return jsonify({
-        "BASE": str(BASE),
-        "FRONTEND_DIST": str(FRONTEND_DIST),
-        "dist_exists": FRONTEND_DIST.exists(),
-        "index_exists": (FRONTEND_DIST / "index.html").exists(),
-        "cwd": os.getcwd(),
-    })
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")

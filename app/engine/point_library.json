@@ -1,0 +1,470 @@
+{
+  "version": "3.0",
+  "description": "Bibliothèque universelle de points de prévention incendie - basée sur 3 rapports de référence Dinaphi (CE/RI/WA)",
+
+  "conditions": {
+    "always":              "Toujours inclus",
+    "BM_only":             "Bâtiment moyen uniquement (h > 10m)",
+    "BB_only":             "Bâtiment bas uniquement (h ≤ 10m)",
+    "has_logements":       "Si logements présents",
+    "has_commerces":       "Si commerces/locaux diurnes accessibles au public",
+    "has_sous_sol":        "Si sous-sol présent",
+    "has_cage_escalier":   "Si cage d'escalier intérieure",
+    "has_ascenseur":       "Si ascenseur prévu",
+    "has_gaz":             "Si installation gaz prévue",
+    "has_parking":         "Si parking intérieur",
+    "has_chaufferie":      "Si chaudière > 30kW (pas PAC extérieure)",
+    "has_commerces_risque":"Si commerces de détail avec marchandises combustibles",
+    "has_detection":       "Si détection généralisée prévue",
+    "BM_logements":        "BM + logements",
+    "multi_niveaux":       "Bâtiment à plusieurs niveaux au-dessus de Ei"
+  },
+
+  "points": [
+
+    {
+      "id": "P01",
+      "titre": "Hauteur et classification du bâtiment",
+      "section": "Occupation",
+      "article": "Annexe 1 art.1.2.1",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)"],
+      "note": "Toujours inclus — permet de déterminer l'annexe applicable. Conclure explicitement BB ou BM avec le calcul de hauteur.",
+      "template": "L'annexe 1 de l'AR fixant les normes de base stipule en son article 1.2.1 : « La hauteur h d'un bâtiment est conventionnellement la distance entre le niveau fini du plancher du niveau le plus élevé et le niveau le plus bas des voies entourant le bâtiment et utilisables par les véhicules des services incendies. Lorsque le niveau le plus élevé ne comprend que des locaux à usage technique, il n'intervient pas dans le calcul de la hauteur ».\n\n[CONCLUSION_HAUTEUR]",
+      "variables": {
+        "CONCLUSION_HAUTEUR": "Ex: 'Nous avons relevé une valeur de [h]m entre le niveau fini du [X]ème étage (Niv. +[cote]) et le niveau le plus bas de la voirie d'accès (Niv. [cote]) ; en conséquence, le bâtiment doit être considéré comme un bâtiment [BB/moyen] au sens de l'AR fixant les normes de base.' OU si hauteur non connue: 'La hauteur exacte du bâtiment n'est pas renseignée sur les plans transmis. Des informations complémentaires sont demandées à l'architecte.'"
+      }
+    },
+
+    {
+      "id": "P02",
+      "titre": "Chemin d'accès pompiers",
+      "section": "Chemin d'accès",
+      "article": "Annexe 2/1 ou 3/1 art.1 + 1.1",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "note": "Toujours inclus. Conclure sur les dispositions à prendre (bornes, interdiction parcage).",
+      "template_BM": "L'annexe 3/1 de l'AR fixant les normes de base impose :\n- en son article 1. : « Les chemins d'accès visés au point 1.1 et 1.4 sont déterminés en accord avec les services d'incendie, selon les lignes directrices suivantes »\n- en son article 1.1. : « Le bâtiment est accessible en permanence aux véhicules automobiles... »\n\nDes dispositions doivent être prises pour que la ou les voies prévues pour le passage des véhicules pompiers soient maintenues libres à tout moment ; le parcage et le stationnement y seront interdits. Si nécessaire des bornes amovibles seront placées pour éviter le stationnement sauvage. Le modèle de borne retenu devra être présenté à la zone de secours pour accord.",
+      "template_BB": "L'annexe 2/1 de l'AR fixant les normes de base impose en son article 1. et 1.1 que les véhicules des services d'incendie doivent pouvoir atteindre une façade donnant accès à chaque niveau.\n\n[CONCLUSION_ACCES]",
+      "variables": {
+        "CONCLUSION_ACCES": "Conclusion selon les plans : accès confirmé / à préciser / problème détecté"
+      }
+    },
+
+    {
+      "id": "P02b",
+      "titre": "Accès façade / baie de sauvetage logement",
+      "section": "Chemin d'accès",
+      "article": "Annexe 2/1 art.1.1",
+      "condition": "BB_only AND has_logements",
+      "present_in": ["RI(BB)"],
+      "note": "BB uniquement. Chaque logement doit avoir une baie d'accès pompiers en façade à rue.",
+      "template": "Dans ce contexte, il y a lieu d'équiper chaque logement d'une baie aux dimensions confortables (largeur utile minimale de 80cm et hauteur utile minimale de 120cm) à placer en façade à rue. Nous recommandons vivement la pose de lucarnes ou de fenêtres de toit du type « balcon ».\n\nSi des fenêtres de toit sont prévues à cet effet, elles doivent être du type « à ouverture par projection » (les fenêtres de toit s'ouvrant uniquement par rotation sont à proscrire)."
+    },
+
+    {
+      "id": "P03",
+      "titre": "Compartimentage principal",
+      "section": "Compartimentage principal",
+      "article": "Annexe 2/1 ou 3/1",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "note": "Toujours inclus. Lister les compartiments du projet spécifique. Jamais de liste générique.",
+      "template": "Afin de limiter la propagation d'un feu et/ou des fumées dans le bâtiment, nous préconisons de réaliser le compartimentage suivant :\n\n[LISTE_COMPARTIMENTS]",
+      "variables": {
+        "LISTE_COMPARTIMENTS": "Liste concrète des compartiments du projet (ex: - Compartimentage des commerces\\n- Compartimentage des locaux techniques\\n- Compartimentage de chaque niveau\\n- Sous-compartimentage de chaque logement\\n- Encloisonnement des cages d'escaliers)"
+      }
+    },
+
+    {
+      "id": "P04",
+      "titre": "Sous-compartimentage logements",
+      "section": "Sous-compartimentage",
+      "article": "Annexe 2/1 art.3.3 / Annexe 3/1 art.3.3",
+      "condition": "has_logements",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "note": "Si logements. Les parois EI 60 et portes EI₁ 30.",
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 3.3 : « Les parois verticales intérieures des locaux ou d'un ensemble de locaux à occupation nocturne présentent EI 60. Dans ces parois, les portes présentent EI₁ 30 ».\n\nDans ce contexte :\n- les parois verticales (murs, cloisons, etc.) intérieures délimitant chaque logement doivent présenter au moins EI 60.\n- la porte d'entrée de chaque logement doit présenter EI₁ 30."
+    },
+
+    {
+      "id": "P05",
+      "titre": "Nombre de sorties — BM",
+      "section": "Évacuation",
+      "article": "Annexe 3/1 art.2.2.1",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "note": "BM uniquement. Chaque compartiment desservi par au moins une sortie avec conditions spécifiques BM.",
+      "template": "L'annexe 3/1 de l'AR fixant les normes de base impose en son article 2.2.1 : « Chaque compartiment est desservi au moins par une sortie si les occupants peuvent sans passer par la cage d'escaliers atteindre une baie de façade accessible aux auto-échelles du service d'incendie ».\n\nA chaque niveau, les occupants doivent pouvoir atteindre une baie de cette façade sans passer par la cage d'escaliers (solution 1) ou en l'absence d'un tel accès, ils doivent pouvoir atteindre une terrasse d'attente accessible aux échelles du service d'incendie présentant un plancher REI 60 et un élément de façade E 60 (solution 2) ou un garde-corps en retrait de 1 m par rapport à la façade (solution 3).\n\nDans le cas contraire, le bâtiment doit disposer d'une deuxième cage d'escalier interne ou externe."
+    },
+
+    {
+      "id": "P06",
+      "titre": "Traversées de parois RF",
+      "section": "Prescriptions relatives à certains éléments de construction",
+      "article": "Annexe 2/1 ou 3/1 art.3.1 + Annexe 7",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "note": "Toujours inclus. Dans CE (BM): version longue avec détail annexe 7 (manchons, mortier RF, etc.). Dans RI (BB): version courte. Adapter selon le niveau de détail du projet.",
+      "template_long": "Les traversées de parois par des conduites de fluides ou d'électricité et les joints de dilatation des parois ne peuvent pas altérer le degré de résistance au feu exigé pour cet élément de construction.\n\nToutes les traversées simples de parois par des câbles électriques ou des conduites de fluides doivent être soigneusement resserrées (mortier RF, plâtre ou laine de roche comprimée) et/ou munies de manchons intumescents selon leur section. A cet effet, il y a lieu de respecter les prescriptions de l'annexe 7 de l'AR fixant les normes de base.\n\nPour les conduits d'air : resserrage soigné + manchons intumescents, grilles foisonnantes ou clapets RF.\n\nL'entreprise ayant effectué ces travaux doit communiquer un document écrit reprenant la nature des produits employés et une attestation de bonne pose.",
+      "template_court": "Les traversées de parois par des conduites de fluides ou d'électricité et les joints de dilatation des parois ne peuvent pas altérer le degré de résistance au feu exigé pour cet élément de construction (annexe 7 de l'AR)."
+    },
+
+    {
+      "id": "P07",
+      "titre": "Éléments structuraux",
+      "section": "Éléments structuraux",
+      "article": "Annexe 2/1 ou 3/1 art.3.2",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "template_BM": "L'annexe 3/1 de l'AR fixant les normes de base impose en son article 3.2 : « Les éléments structuraux présentent R 60 au-dessus de Ei et R 120 en-dessous de Ei, y compris le plancher de Ei ».\n\nTous les éléments structuraux du bâtiment (colonnes, poutres, planchers, parois portantes, etc.), y compris les éléments structuraux des toitures, doivent présenter R 60 et R 120 en-dessous du niveau d'évacuation le plus bas y compris le plancher de ce niveau.\n\nLors de la réception des travaux, une attestation d'un ingénieur en stabilité certifiant le respect de ces prescriptions sera transmise à la zone de secours.",
+      "template_BB": "L'annexe 2/1 de l'AR fixant les normes de base impose en son article 3.2 que les éléments structuraux présentent la résistance au feu R selon leur situation (tableau 2.1). Lors de la réception, une attestation d'ingénieur en stabilité sera transmise à la zone de secours."
+    },
+
+    {
+      "id": "P08",
+      "titre": "Bâtiment à plusieurs niveaux — parois nocturnes",
+      "section": "Bâtiment à plusieurs niveaux",
+      "article": "Annexe 3/1 art.3.3",
+      "condition": "BM_logements",
+      "present_in": ["CE(BM)"],
+      "note": "BM + logements uniquement. Rappel de P04 mais dans le contexte multi-niveaux BM.",
+      "template": "L'annexe 3/1 de l'AR fixant les normes de base impose en son article 3.3 : « Dans les bâtiments à plusieurs niveaux au-dessus du plancher de Ei, les parois verticales intérieures limitant des locaux ou ensemble de locaux à occupation nocturne présentent EI 60. Dans ces parois, les portes présentent EI₁ 30 ».\n\nDans ce contexte :\n- les parois verticales intérieures délimitant chaque logement doivent présenter au moins EI 60.\n- la porte d'entrée de chaque logement doit présenter EI₁ 30."
+    },
+
+    {
+      "id": "P09",
+      "titre": "Façades simple paroi — jonctions",
+      "section": "Façades simple paroi",
+      "article": "Annexe 2/1 ou 3/1 art.3.5.1.1",
+      "condition": "always",
+      "present_in": ["CE(BM)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 3.5.1.1 que les montants constituant l'ossature de façade sont fixés à chaque niveau à l'ossature du bâtiment (R 60). La jonction des parois de compartiment avec la façade présente au moins EI 60.\n\nAu droit des séparations horizontales entre compartiments, les joints entre les dalles et les parois verticales (façades) doivent présenter au moins EI 60."
+    },
+
+    {
+      "id": "P10",
+      "titre": "Cages d'escalier intérieures",
+      "section": "Cages d'escalier intérieures",
+      "article": "Annexe 2/1 ou 3/1 art.4.2.1 + 4.2.2.1 + 4.2.2.3",
+      "condition": "has_cage_escalier",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose :\n- en son article 4.2.1 : « les escaliers qui relient plusieurs compartiments sont encloisonnés ».\n- en son article 4.2.2.1 : « les parois intérieures des cages d'escaliers présentent au moins EI 60 ».\n\nLes parois intérieures délimitant chaque cage d'escalier doivent présenter EI 60.\n\nA chaque niveau, toutes les portes intérieures donnant dans chaque cage d'escaliers doivent présenter EI₁ 30 à fermeture automatique.\n\n[CONCLUSION_CAGE]",
+      "variables": {
+        "CONCLUSION_CAGE": "Ex: 'N'apparaît pas sur les plans' ou 'Conforme selon les plans' ou conclusion spécifique"
+      }
+    },
+
+    {
+      "id": "P11",
+      "titre": "Baie de ventilation cage d'escalier",
+      "section": "Cages d'escalier intérieures",
+      "article": "Annexe 3/1 art.4.2.2.6",
+      "condition": "has_cage_escalier",
+      "present_in": ["CE(BM)", "WA(BB)"],
+      "note": "Pas dans RI (BB cabinet dentaire). Inclure si cage d'escalier desservant des logements.",
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 4.2.2.6 : « une baie de ventilation débouchant à l'air libre, d'une section de 1 m² minimum, est prévue à la partie supérieure de chaque cage d'escalier intérieure ».\n\n[CONCLUSION_BAIE]\n\nEn partie haute de la cage d'escalier, il y a lieu de prévoir une baie de ventilation conforme à la norme NBN S21-208/3. La commande d'ouverture est manuelle, placée au niveau d'évacuation entre 1,4 m et 2 m de hauteur et à moins de 2 m de la porte d'accès à la cage.",
+      "variables": {
+        "CONCLUSION_BAIE": "Ex: 'N'apparaît pas sur les plans' ou 'Conforme'"
+      }
+    },
+
+    {
+      "id": "P12",
+      "titre": "Objets autorisés dans les cages d'escalier",
+      "section": "Cages d'escalier intérieures",
+      "article": "Annexe 3/1 art.4.2.2.7",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "note": "BM uniquement.",
+      "template": "L'annexe 3/1 de l'AR fixant les normes de base impose en son article 4.2.2.7 que seuls les objets suivants sont autorisés dans les cages d'escaliers : moyens de détection, moyens d'extinction, appareils de signalisation, d'éclairage, de chauffage, dispositifs de ventilation et de désenfumage.\n\nToute autre conduite est interdite dans les cages d'escaliers (excepté les conduites d'eau et d'électricité servant uniquement aux éléments précités)."
+    },
+
+    {
+      "id": "P13",
+      "titre": "Escaliers — caractéristiques",
+      "section": "Escaliers",
+      "article": "Annexe 2/1 ou 3/1 art.4.2.3.1",
+      "condition": "has_cage_escalier",
+      "present_in": ["CE(BM)", "WA(BB)"],
+      "template_BM": "L'annexe 3/1 de l'AR fixant les normes de base impose en son article 4.2.3.1 que les escaliers présentent R 60, sont pourvus de contre-marches pleines, de mains courantes de chaque côté, avec un giron ≥ 20 cm, une hauteur de marche ≤ 18 cm et une pente ≤ 75 %.",
+      "template_BB": "L'annexe 2/1 de l'AR fixant les normes de base impose en son article 4.2.3.1 les caractéristiques des escaliers : giron ≥ 20 cm, hauteur ≤ 18 cm, pente ≤ 75 %, mains courantes."
+    },
+
+    {
+      "id": "P14",
+      "titre": "Largeur des chemins d'évacuation",
+      "section": "Chemins d'évacuation",
+      "article": "Annexe 2/1 ou 3/1 art.4.4.1.1",
+      "condition": "always",
+      "present_in": ["CE(BM)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 4.4.1.1 que la largeur utile des chemins d'évacuation et de leurs portes est de 0,80 m au moins (0,60 m pour les coursives).\n\nToutes les portes situées sur le parcours des évacuations doivent présenter une largeur utile d'au moins 80 cm."
+    },
+
+    {
+      "id": "P15",
+      "titre": "Distances d'évacuation — BM logements",
+      "section": "Chemins d'évacuation",
+      "article": "Annexe 3/1 art.4.4.1.1",
+      "condition": "BM_logements",
+      "present_in": ["CE(BM)"],
+      "template": "L'annexe 3/1 de l'AR fixant les normes de base impose en son article 4.4.1.1 qu'aucun point d'un compartiment ne peut se trouver à une distance supérieure à, pour les locaux à occupation nocturne :\n- 20 m du chemin d'évacuation reliant les sorties ;\n- 30 m de l'accès à la sortie la plus proche ;\n- 60 m de l'accès à une deuxième sortie."
+    },
+
+    {
+      "id": "P16",
+      "titre": "Sorties — définition",
+      "section": "Chemins d'évacuation",
+      "article": "Annexe 2/1 ou 3/1 art.4.4.1.2",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 4.4.1.2 qu'est considéré comme une sortie d'un compartiment : une cage d'escaliers intérieure conforme au point 4.2, une cage d'escaliers extérieure conforme au point 4.3, un accès direct à ciel ouvert à un niveau d'évacuation, ou un chemin d'évacuation situé à un niveau d'évacuation satisfaisant aux prescriptions du point 4.4.2.\n\nToutes les portes situées sur le parcours des évacuations doivent pouvoir s'ouvrir facilement et immédiatement sans verrouillage empêchant leur utilisation en cas d'urgence."
+    },
+
+    {
+      "id": "P17",
+      "titre": "Sas — objets autorisés",
+      "section": "Sas",
+      "article": "Annexe 7 art.2.2",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "note": "BM uniquement — si sas prévu dans le projet.",
+      "template": "L'annexe 7 de l'AR fixant les normes de base impose en son article 2.2 que seuls les objets suivants sont autorisés dans les sas : moyens de détection, d'extinction, de signalisation, d'éclairage, de chauffage, de ventilation et de désenfumage. Toute autre conduite est interdite dans les sas."
+    },
+
+    {
+      "id": "P18",
+      "titre": "Locaux et espaces techniques",
+      "section": "Locaux et espaces techniques",
+      "article": "Annexe 2/1 ou 3/1 art.5.1.1",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 5.1.1 : « Un local technique ou un ensemble de locaux techniques constitue un compartiment ».\n\nChaque local compteur (électricité, gaz) et chaque local technique doit être délimité par des parois (R)EI 60 et portes EI₁ 30 sollicitées à la fermeture."
+    },
+
+    {
+      "id": "P19",
+      "titre": "Chaufferie / Mode de chauffage",
+      "section": "Chaufferie - généralités",
+      "article": "Annexe 2/1 ou 3/1 art.5.1.2.2",
+      "condition": "always",
+      "present_in": ["CE(BM)", "WA(BB)"],
+      "note": "Toujours mentionner le mode de chauffage. Si PAC extérieure: art.5.1.2.2 NON applicable. Si chaudière: développer selon puissance.",
+      "template_PAC": "Le bâtiment est chauffé par une pompe à chaleur placée à l'extérieur. L'article 5.1.2.2 de l'annexe [2/1 ou 3/1] relatif aux chaufferies n'est pas d'application.",
+      "template_chaudiere_lt30": "Les chaudières individuelles sont de type C, ont un débit calorifique de [X] kW et sont alimentées au gaz de ville. Ces chaudières peuvent être installées dans des espaces qui ont des fonctions autres que celles d'espace d'installation pour chaudière de chauffage central pour autant que le niveau de bruit ne dépasse pas la valeur maximale admise par la norme NBN S 01-404.",
+      "template_chaudiere_gt30": "La chaufferie est soumise aux dispositions du point 4 de l'annexe 7 de l'AR fixant les normes de base. [DETAILS_CHAUFFERIE]"
+    },
+
+    {
+      "id": "P20",
+      "titre": "Gaines verticales et horizontales",
+      "section": "Gaines verticales et horizontales",
+      "article": "Annexe 3/1 art.5.1.5",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "template": "Il y a lieu de se référer aux prescriptions des articles 5.1.5 de l'annexe 3/1 relatives aux gaines verticales et horizontales."
+    },
+
+    {
+      "id": "P21",
+      "titre": "Ascenseurs",
+      "section": "Ascenseurs",
+      "article": "AR 09/03/2009 + Annexe 3/1 art.6.4",
+      "condition": "has_ascenseur",
+      "present_in": ["CE(BM)", "WA(BB)"],
+      "template": "Les ascenseurs sont de type [type]. Il y a lieu de se référer aux prescriptions de l'AR du 09/03/2009 relatif à la sécurité des ascenseurs."
+    },
+
+    {
+      "id": "P22",
+      "titre": "Installations électriques + éclairage de sécurité",
+      "section": "Installations électriques",
+      "article": "Annexe 2/1 ou 3/1 art.6.5.1 + 6.5.4",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 6.5.1 que les installations électriques sont conformes au RGIE.\n\nUn éclairage de sécurité doit être prévu dans tous les locaux pour permettre l'évacuation sans danger du bâtiment (niveau d'éclairement minimal de 1 lux et 5 lux aux endroits dangereux). Il peut être fourni par des appareils autonomes branchés sur le circuit alimentant l'éclairage normal concerné.\n\nLa conformité de l'installation d'éclairage de sécurité aux normes (NBN EN 1838, NBN EN 50172, NBN EN 60598-2-22) doit être vérifiée par un organisme agréé. Une copie de l'attestation doit être remise à la zone de secours."
+    },
+
+    {
+      "id": "P22b",
+      "titre": "Canalisations électriques circuits de sécurité",
+      "section": "Installations électriques",
+      "article": "Annexe 3/1 art.6.5.2",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "note": "BM uniquement — les exigences de résistance au feu des câbles alimentant les installations de sécurité.",
+      "template": "L'annexe 3/1 de l'AR fixant les normes de base impose en son article 6.5.2 que les canalisations électriques alimentant des installations ou appareils dont le maintien en service est indispensable en cas de sinistre (éclairage de sécurité, alarme, détection, désenfumage, ascenseurs particuliers) présentent une résistance au feu : PH 60 (câbles ≤ Ø 20mm, section ≤ 2,5 mm²) ou Rf 1h selon NBN 713-020 (autres cas)."
+    },
+
+    {
+      "id": "P23",
+      "titre": "Installations de gaz",
+      "section": "Installations de distribution de gaz",
+      "article": "Annexe 3/1 art.6.6",
+      "condition": "has_gaz",
+      "present_in": ["CE(BM)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en son article 6.6 que les installations alimentées en gaz combustible répondent à la NBN D 51-003. Une attestation certifiant la conformité des installations sera remise à la zone de secours.\n\nLes canalisations de gaz doivent être peintes en couleur jaune ocre (RAL 1004) sur toute leur longueur (NBN 69). Le branchement privé doit être équipé d'une vanne en trottoir signalée \"G\"."
+    },
+
+    {
+      "id": "P23b",
+      "titre": "Local compteurs gaz",
+      "section": "Local compteurs gaz",
+      "article": "Réglementation gaz",
+      "condition": "has_gaz AND multi_niveaux",
+      "present_in": ["CE(BM)"],
+      "note": "Si plusieurs logements avec compteurs gaz individuels.",
+      "template": "Les compteurs gaz doivent être installés dans un local prévu à cet effet, équipé d'une ventilation basse et haute naturelle efficace et permanente. Si gaz + électricité dans le même local : les compteurs gaz ne peuvent pas être situés en-dessous des compteurs électricité. Une plaque \"DEFENSE DE FUMER\" + mot \"GAZ\" est apposée sur la porte."
+    },
+
+    {
+      "id": "P24",
+      "titre": "Installations aérauliques",
+      "section": "Installations aérauliques",
+      "article": "Annexe 3/1 art.6.7",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "note": "Inclus dans tous les rapports, même si on indique qu'il n'y en a pas.",
+      "template": "La conformité des éventuelles installations aérauliques aux prescriptions imposées par les articles 6.7.1 à 6.7.6 de l'annexe [2/1 ou 3/1] de l'AR du 7 juillet 1994 doit être vérifiée par un organisme indépendant. Une copie du PV de contrôle devra être remise à la zone de secours."
+    },
+
+    {
+      "id": "P25",
+      "titre": "Alarme incendie",
+      "section": "Alarme incendie",
+      "article": "Annexe 2/1 ou 3/1 art.6.8",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose en ses articles 6.8 et 6.8.4 que les signaux d'alarme sont perceptibles par toutes les personnes intéressées.\n\nIl y a lieu d'équiper le bâtiment d'une installation d'alarme incendie constituée de boutons poussoirs sous vitre à briser ou à pousser actionnant une sirène audible de manière significative par tous les occupants en tout point du bâtiment.\n\nL'installation d'alarme incendie devra fonctionner même en cas de coupure de l'alimentation électrique."
+    },
+
+    {
+      "id": "P26",
+      "titre": "Détection automatique généralisée",
+      "section": "Détection",
+      "article": "NBN S21-100-1 + NBN S21-100-2",
+      "condition": "has_detection",
+      "present_in": ["CE(BM)"],
+      "note": "Seulement si détection généralisée requise ou prévue (BM logements, parking > 625m², etc.).",
+      "template": "Le bâtiment sera protégé par une installation généralisée de détection d'incendie, conforme à la norme NBN S21-100-1 et NBN S21-100-2 éd. 2015. Nous recommandons que l'installateur, l'installation et les composants soient certifiés BOSEC.\n\nLa conformité de l'installation sera contrôlée par un organisme d'inspection de type A accrédité ISO/IEC 17020 par BELAC. Le rapport de contrôle indiquera de manière très explicite la conformité ou la non-conformité de l'installation à la norme NBN S21-100. Une copie sera remise à la zone de secours.\n\nConformément à la NBN S21-100, l'installation fera l'objet d'un entretien annuel par une entreprise certifiée BOSEC et d'un contrôle tous les 3 ans."
+    },
+
+    {
+      "id": "P27",
+      "titre": "Extincteurs",
+      "section": "Moyens d'extinction",
+      "article": "Annexe 2/1 ou 3/1 art.6.8.1 + 6.8.5.2",
+      "condition": "always",
+      "present_in": ["CE(BM)", "RI(BB)", "WA(BB)"],
+      "template": "L'annexe [2/1 ou 3/1] de l'AR fixant les normes de base impose que les dispositifs d'extinction sont obligatoires.\n\nIl y a lieu d'installer au minimum un extincteur de 6 kg de poudre ABC ou de 6 litres à eau pulvérisée avec additif par 150 m² de surface totale et par niveau. Il devra obligatoirement être porteur de la marque CE ; le label BENOR est vivement recommandé.\n\n[LOCALISATION_EXTINCTEURS]",
+      "variables": {
+        "LOCALISATION_EXTINCTEURS": "Ex: '1 extincteur au RDC (cabinet dentaire) + 1 extincteur au R+1 (logement) + 1 extincteur au R-1 (local technique)'"
+      }
+    },
+
+    {
+      "id": "P28",
+      "titre": "Robinets d'incendie armés (RIA)",
+      "section": "Moyens d'extinction",
+      "article": "Annexe 3/1 art.6.8.5.3",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "note": "BM uniquement si surface > 500 m².",
+      "template": "L'annexe 3/1 de l'AR fixant les normes de base impose que le nombre et l'emplacement des robinets d'incendie armés sont choisis de façon à ce que tous les points des compartiments puissent être atteints par le jet de la lance.\n\nIl y a lieu d'équiper le bâtiment d'un réseau de robinets d'incendie armés conformes à la norme EN 671-1. La section de la colonne d'alimentation doit être calculée afin de respecter une pression d'au moins 2,5 bars et un débit d'au moins 72 l/min (3 RIA simultanément pendant ½h).\n\nLes canalisations d'alimentation du réseau d'extinction doivent être peintes en rouge (RAL 3000)."
+    },
+
+    {
+      "id": "P29",
+      "titre": "Borne incendie",
+      "section": "Borne incendie",
+      "article": "Annexe 2/1 ou 3/1 art.6.8.5.4.2",
+      "condition": "always",
+      "present_in": ["CE(BM)"],
+      "note": "Inclure si la présence d'une borne à moins de 100m n'est pas confirmée.",
+      "template": "La présence d'une bouche ou d'une borne aérienne d'incendie à moins de 100 mètres de l'entrée du bâtiment projeté est indispensable. Si tel n'est pas le cas, il y a lieu de faire installer à proximité de l'entrée du bâtiment au moins une borne aérienne d'incendie conforme à la norme NBN S21-019."
+    },
+
+    {
+      "id": "P30",
+      "titre": "Toiture — réaction au feu",
+      "section": "Toiture (réaction au feu)",
+      "article": "Annexe 5/1 art.8.1 + 8.3",
+      "condition": "always",
+      "present_in": ["CE(BM)"],
+      "note": "Inclure si toiture plate ou terrasse en bois présente.",
+      "template": "L'annexe 5/1 de l'AR fixant les normes de base impose en son article 8.1 que les produits pour les revêtements des toitures présentent la classe BROOF(t1). Les revêtements des balcons, terrasses et coursives présentent la même réaction au feu.\n\nLes éléments suivants doivent être classés BROOF(t1) : étanchéité des toitures plates, couverture des versants, revêtement des balcons/terrasses, lanterneaux, ondulés translucides, panneaux solaires/photovoltaïques.\n\nLors de la réception des travaux, la preuve du respect de ces prescriptions (marquage CE ou rapport de classement + attestation de pose) sera transmise à la zone de secours."
+    },
+
+    {
+      "id": "P31",
+      "titre": "Réaction au feu — parois intérieures",
+      "section": "Réaction au feu",
+      "article": "Annexe 5/1 art.2 + 3 + 4/1",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "note": "BM uniquement — avec les 4 tableaux. BB: simplifié.",
+      "template_BM": "L'annexe 5/1 de l'AR fixant les normes de base impose les exigences de réaction au feu des revêtements selon le type d'occupation. Etant donné que le type d'occupation n'a pas été communiqué, le bâtiment est considéré appartenir à la classe « type 1 ».\n\nLes revêtements de parois intérieures, plafonds et sols respectent les exigences des tableaux I, II, III et IV de l'annexe 5/1 selon le type et la localisation des locaux.\n\nLors de la réception des travaux, la preuve du respect de ces prescriptions sera transmise à la zone de secours.",
+      "template_BB": "L'annexe 5/1 de l'AR fixant les normes de base impose les exigences de réaction au feu des revêtements selon le type d'occupation et la localisation (tableaux I, II, III). Lors de la réception, attestations de conformité à transmettre."
+    },
+
+    {
+      "id": "P32",
+      "titre": "Réaction au feu — façades",
+      "section": "Réaction au feu — Façades",
+      "article": "Annexe 5/1 art.6.1.1",
+      "condition": "BM_only",
+      "present_in": ["CE(BM)"],
+      "template": "L'annexe 5/1 de l'AR fixant les normes de base impose en son article 6.1.1 les exigences de réaction au feu des produits utilisés pour les revêtements de façades (tableau V) : revêtement extérieur B-s3,d1 ; composants substantiels A2-s3,d0 ; montants ossature A1."
+    },
+
+    {
+      "id": "P33",
+      "titre": "Divers — espaces commerciaux",
+      "section": "Divers - Espaces commerciaux",
+      "article": "Bonnes pratiques",
+      "condition": "has_commerces",
+      "present_in": ["CE(BM)"],
+      "note": "Si commerces de détail avec marchandises combustibles.",
+      "template": "Dans les commerces de détail : le mobilier, les éléments de décoration et toute marchandise inflammable seront disposés à plus de 50 cm des sources de chaleur quelconques. Les fils électriques seront disposés de manière à éviter tout risque de trébuchement."
+    },
+
+    {
+      "id": "P34",
+      "titre": "Escalier extérieur",
+      "section": "Escaliers",
+      "article": "Annexe 2/1 ou 3/1 art.4.3",
+      "condition": "has_escalier_exterieur",
+      "present_in": ["RI(BB)"],
+      "template": "Les escaliers extérieurs donnent accès à un niveau d'évacuation. Aucune stabilité au feu n'est requise mais le matériau est de classe A1.\n\n[CONCLUSION_ESCALIER_EXT]",
+      "variables": {
+        "CONCLUSION_ESCALIER_EXT": "Ex: 'Les informations relatives aux matériaux de l'escalier extérieur ne sont pas renseignées sur les plans — des précisions sont demandées à l'architecte.'"
+      }
+    },
+
+    {
+      "id": "P35",
+      "titre": "Portes RF — qualité et placement",
+      "section": "Précisions techniques",
+      "article": "RGP art.1.10 + 1.12 + AR 13/06/2007",
+      "condition": "always",
+      "present_in": ["RI(BB)", "WA(BB)"],
+      "note": "Présent dans les rapports Dinaphi. Peut être mis en section 'Précisions techniques' en début de motivation.",
+      "template": "Les nouvelles portes résistantes au feu doivent être titulaires du label BENOR-ATG ou faire l'objet d'un certificat de conformité délivré par un organisme certificateur agréé (ANPI).\n\nLeur placement doit être réalisé par des placeurs certifiés ISIB ou faire l'objet d'un contrôle de placement par un organisme accrédité avant mise en service, ou le placeur doit fournir une déclaration écrite attestant que les portes ont été placées conformément aux conditions de placement du PV d'essai ou du document ATG.\n\nToutes les portes RF (excepté les portes d'entrée privatives des logements) doivent être sollicitées à la fermeture automatique et équipées sur chaque face d'un panonceau 'PORTE COUPE-FEU — A MAINTENIR FERMEE'."
+    }
+
+  ],
+
+  "section_remarques": {
+    "description": "Section 7 standard — 4 points toujours présents",
+    "points": [
+      "Les conduites de fluides, de solides, d'électricité ou d'ondes électromagnétiques traversant des éléments de construction ne peuvent pas altérer le degré de résistance au feu exigé pour ces éléments de construction.",
+      "Les installations électriques (y compris l'éclairage de sécurité), la centrale de détection généralisée, les équipements d'alarme, d'alerte, … doivent être vérifiées par un organisme agréé par le SPF Economie. Une suite favorable doit être réservée aux remarques formulées.",
+      "Les logements disposeront d'un détecteur d'incendie conformément à l'AGW du 21/10/2004, et ce dans chaque logement, un détecteur par 80 m² et par niveau au moins. Si l'installation d'au moins 4 détecteurs est nécessaire, ceux-ci seront soit reliés entre eux soit raccordés à une centrale. Matériel certifié BOSEC, type optique obligatoire.",
+      "Les extincteurs doivent être maintenus en bon état de fonctionnement par un contrôle et un entretien annuel suivant la norme NBN S 21-050."
+    ],
+    "points_conditionnels": {
+      "has_detection": "Étant donné la présence d'une installation de détection automatique d'incendie de type 'surveillance totale', la conception et le fonctionnement de l'installation doivent être contrôlés par un organisme de contrôle accrédité.",
+      "has_gaz": "Les installations de gaz devront répondre aux dispositions réglementaires et aux règles de bonne pratique (NBN D 51-003). Une attestation certifiant la conformité des installations nous sera transmise."
+    }
+  }
+}

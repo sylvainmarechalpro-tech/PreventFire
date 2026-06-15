@@ -1,0 +1,29 @@
+{
+  "version": "2.0",
+  "philosophie": [
+    "Chaque point aboutit à une conclusion concrète pour CE projet spécifique",
+    "Ne jamais écrire 'A respecter' — tout le rapport est à respecter par définition",
+    "Si info manquante sur plans: demander des renseignements complémentaires",
+    "Ne pas copier l'article de loi sans en tirer une conclusion",
+    "Inclure un point UNIQUEMENT s'il est pertinent pour le projet analysé",
+    "Pour chaque prescription: vérifier si conforme, non conforme, ou info manquante sur plans"
+  ],
+  "regles_exclusion": {
+    "point_3_doubles_portes": "Inclure SEULEMENT si doubles portes prévues dans le projet",
+    "point_7_echelles": "Inclure SEULEMENT si hauteur plancher bas < 8m du sol confirmée",
+    "point_14_faux_plafonds": "Inclure SEULEMENT si faux-plafonds visibles dans chemins évacuation",
+    "point_20_escalier_exterieur": "Inclure SEULEMENT si escalier extérieur présent dans le projet",
+    "point_25_chaufferie": "SI pompe à chaleur extérieure: article 5.1.2.2 NON applicable",
+    "occupation_logement": "NE PAS calculer np pour les logements (occupation privée)",
+    "section7_si_point43": "Si contrôles périodiques traités dans section 6, section 7 = 4 points standards seulement"
+  },
+  "erreurs_frequentes": [
+    "Local technique groupé avec les caves dans le compartimentage → FAUX, ce sont deux compartiments distincts",
+    "Calcul np appliqué au logement → NON applicable",
+    "Écrire une incertitude en gros dans le rapport → Demander info complémentaire à la place",
+    "Citer pompe à chaleur et ensuite parler de chaufferie → Incohérent",
+    "Oublier extincteur au R-1 (local technique)",
+    "Ne pas justifier le type d'occupation (Type 1/2/3)",
+    "Dupliquer les contrôles périodiques entre section 6 et section 7"
+  ]
+}

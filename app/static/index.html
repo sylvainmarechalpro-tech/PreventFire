@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>PreventFire Pro v5.0</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,sans-serif;background:#f0f2f5;color:#1a1a1a;min-height:100vh}
+.top{background:#1a1a1a;padding:10px 20px;display:flex;align-items:center;gap:10px}
+.logo{width:26px;height:26px;background:#c0392b;border-radius:5px;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.appname{color:#fff;font-size:14px;font-weight:600}
+.ver{color:#888;font-size:10px;font-family:monospace;border:1px solid #333;border-radius:3px;padding:1px 6px}
+.zone-sel{margin-left:auto;background:#ffffff15;border:1px solid #ffffff25;color:#fff;border-radius:5px;padding:4px 8px;font-size:11px;font-family:inherit}
+.steps{background:#fff;border-bottom:1px solid #e5e7eb;display:flex;padding:0 20px;overflow-x:auto}
+.step{padding:9px 16px;font-size:11px;color:#9ca3af;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.step.active{color:#c0392b;border-bottom-color:#c0392b;font-weight:600}
+.step.done{color:#059669}
+.sn{width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.step.done .sn{background:#059669;border-color:#059669;color:#fff}
+.content{padding:20px;max-width:960px;margin:0 auto}
+.panel{display:none}.panel.active{display:block}
+.card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:14px;overflow:hidden}
+.card-hd{padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:600}
+.card-body{padding:16px}
+.dz{border:2px dashed #d1d5db;border-radius:10px;padding:32px;text-align:center;cursor:pointer;position:relative;background:#fafafa;transition:all .2s;margin-bottom:12px}
+.dz:hover,.dz.over{border-color:#c0392b;background:#fef2f2}
+.dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-t{font-size:14px;font-weight:500;margin-bottom:5px}
+.dz-s{font-size:12px;color:#9ca3af}
+.fi{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fafafa;border:1px solid #e5e7eb;border-radius:7px;margin-bottom:6px}
+.fi-name{font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fi-size{font-size:11px;color:#9ca3af}
+.fi-st{font-size:10px;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.fi-st.loading{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.fi-st.ready{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.info{padding:10px 13px;border-radius:7px;font-size:12px;margin-bottom:12px;line-height:1.5}
+.info-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.full{grid-column:1/-1}
+.fg{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.fg label{font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}
+.fg input,.fg select,.fg textarea{font-family:inherit;font-size:12px;padding:7px 9px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;color:#1a1a1a;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#c0392b}
+.fg textarea{min-height:54px;resize:vertical}
+.sh{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px;padding-bottom:5px;border-bottom:1px solid #f3f4f6}
+.sh:first-child{margin-top:0}
+.tg-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.tg-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1px solid #e5e7eb;border-radius:6px}
+.tg-label{font-size:11px}
+.toggle{position:relative;width:34px;height:18px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:#d1d5db;border-radius:99px;transition:.2s}
+.slider:before{position:absolute;content:"";height:12px;width:12px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:#c0392b}
+input:checked+.slider:before{transform:translateX(16px)}
+.cl-filter{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.cl-filter-btn{padding:4px 12px;border-radius:99px;font-size:11px;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#6b7280;font-family:inherit}
+.cl-filter-btn.active{background:#c0392b;color:#fff;border-color:#c0392b}
+.cl-sec{margin-bottom:8px}
+.cl-sec-hd{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;background:#f9fafb;border-radius:6px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.cl-sec-cnt{font-size:10px;padding:1px 7px;border-radius:99px;font-weight:500}
+.cl-row{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:4px;border:1px solid}
+.cl-row.nok{background:#fef2f2;border-color:#fecaca}
+.cl-row.q{background:#fffbeb;border-color:#fde68a}
+.cl-left{flex:1}
+.cl-art{font-family:monospace;font-size:9px;color:#9ca3af;margin-bottom:2px}
+.cl-title{font-size:12px;font-weight:600;margin-bottom:4px}
+.cl-row.nok .cl-title{color:#991b1b}
+.cl-row.q .cl-title{color:#92400e}
+.cl-badge{display:inline-block;font-size:9px;padding:1px 7px;border-radius:99px;font-weight:600;margin-bottom:4px}
+.badge-nok{background:#fecaca;color:#991b1b}
+.badge-q{background:#fde68a;color:#92400e}
+.cl-exig{font-size:11px;line-height:1.6;white-space:pre-wrap;color:#374151;background:#fff;border-radius:6px;padding:8px 10px;border:1px solid #f3f4f6;margin-top:4px}
+.cl-stbs{display:flex;gap:4px;flex-shrink:0;margin-top:2px}
+.stb{width:22px;height:22px;border-radius:50%;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
+.stb.ok{border-color:#059669;color:#059669}.stb.ok:hover{background:#059669;color:#fff}
+.stb.nok{border-color:#dc2626;color:#dc2626}.stb.nok:hover{background:#dc2626;color:#fff}
+.stb.q{border-color:#d97706;color:#d97706}.stb.q:hover{background:#d97706;color:#fff}
+.stb.na{border-color:#9ca3af;color:#9ca3af}.stb.na:hover{background:#9ca3af;color:#fff}
+.stb.on.ok{background:#059669;color:#fff}
+.stb.on.nok{background:#dc2626;color:#fff}
+.stb.on.q{background:#d97706;color:#fff}
+.stb.on.na{background:#9ca3af;color:#fff}
+.empty-cl{text-align:center;padding:32px;color:#9ca3af;font-size:13px;background:#f9fafb;border-radius:10px}
+.stats-row{display:flex;gap:10px;margin-bottom:12px}
+.sc{flex:1;padding:10px;border-radius:8px;border:1px solid;text-align:center}
+.sc.nok{background:#fef2f2;border-color:#fecaca}
+.sc.q{background:#fffbeb;border-color:#fde68a}
+.sc.ok{background:#ecfdf5;border-color:#a7f3d0}
+.sc-n{font-size:24px;font-weight:700;font-family:monospace}
+.sc.nok .sc-n{color:#dc2626}
+.sc.q .sc-n{color:#d97706}
+.sc.ok .sc-n{color:#059669}
+.sc-l{font-size:10px;margin-top:2px}
+.sc.nok .sc-l{color:#991b1b}
+.sc.q .sc-l{color:#92400e}
+.sc.ok .sc-l{color:#065f46}
+.rpt-hd{background:#1a1a1a;padding:14px 18px;border-radius:10px 10px 0 0}
+.rpt-body{padding:14px 18px;background:#fff;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px}
+.rpt-pt{margin-bottom:12px;padding:12px 14px;border-radius:8px;border-left:4px solid}
+.rpt-pt.nok{background:#fef2f2;border-color:#dc2626}
+.rpt-pt.q{background:#fffbeb;border-color:#d97706}
+.rpt-ptitle{font-size:12px;font-weight:700;margin-bottom:3px}
+.rpt-pref{font-size:10px;font-family:monospace;margin-bottom:6px}
+.rpt-ptext{font-size:11px;line-height:1.7;white-space:pre-wrap}
+.rpt-pt.nok .rpt-ptitle{color:#991b1b}
+.rpt-pt.nok .rpt-pref{color:#dc2626}
+.rpt-pt.q .rpt-ptitle{color:#92400e}
+.rpt-pt.q .rpt-pref{color:#d97706}
+.bars{background:#fff;border-top:1px solid #e5e7eb;padding:12px 20px;display:flex;gap:8px;align-items:center;position:sticky;bottom:0}
+.btn{padding:8px 18px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid;display:flex;align-items:center;gap:6px;font-family:inherit}
+.btn-p{background:#c0392b;color:#fff;border-color:#c0392b}
+.btn-p:hover{background:#a93226}
+.btn-p:disabled{background:#d1d5db;border-color:#d1d5db;color:#9ca3af;cursor:not-allowed}
+.btn-s{background:#fff;color:#374151;border-color:#e5e7eb}
+.btn-s:hover{background:#f9fafb}
+.btn-g{background:#059669;color:#fff;border-color:#059669}
+.btn-hint{font-size:11px;color:#9ca3af;margin-left:auto}
+.spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">F</div>
+  <span class="appname">PreventFire Pro</span>
+  <span class="ver">v5.0</span>
+  <select class="zone-sel" id="ZONE">
+    <option value="ZSBW">Zone Brabant Wallon (ZSBW)</option>
+    <option value="NAGE">Zone NAGE (Namur)</option>
+    <option value="DINAPHI">Zone DINAPHI (Beauraing)</option>
+  </select>
+</div>
+<div class="steps">
+  <div class="step active" id="S1" onclick="GO(1)"><div class="sn">1</div>Plans</div>
+  <div class="step" id="S2" onclick="GO(2)"><div class="sn">2</div>Identification</div>
+  <div class="step" id="S3" onclick="GO(3)"><div class="sn">3</div>Description</div>
+  <div class="step" id="S4" onclick="GO(4)"><div class="sn">4</div>Hypotheses</div>
+  <div class="step" id="S5" onclick="GO(5)"><div class="sn">5</div>Manquements</div>
+  <div class="step" id="S6" onclick="GO(6)"><div class="sn">6</div>Rapport</div>
+</div>
+<div class="content">
+
+<div class="panel active" id="P1">
+  <div class="card">
+    <div class="card-hd">Telechargement des plans</div>
+    <div class="card-body">
+      <div class="dz" id="DZ" ondragover="dgOv(event)" ondragleave="dgLv(event)" ondrop="dgDp(event)">
+        <input type="file" id="FI" multiple accept=".pdf,.png,.jpg,.jpeg" onchange="addF(this.files)">
+        <div class="dz-t">Glissez vos plans ici ou cliquez</div>
+        <div class="dz-s">PDF, PNG, JPG - jusqu'a 5 fichiers</div>
+      </div>
+      <div id="FL"></div>
+      <div class="info info-blue" style="margin-top:10px">L'IA analysera les plans et identifiera les manquements par rapport a l'AR 07.07.1994 (annexe 2/1 BB ou 3/1 BM).</div>
+    </div>
+  </div>
+  <div class="bars">
+    <button class="btn btn-p" id="BP1" onclick="extractInfo()" disabled>
+      <span id="SBP1" style="display:none" class="spin"></span>
+      Analyser et continuer
+    </button>
+    <span class="btn-hint" id="HP1">Chargez au moins un plan</span>
+  </div>
+</div>
+
+<div class="panel" id="P2">
+  <div class="card">
+    <div class="card-hd">1. Composition du dossier</div>
+    <div class="card-body">
+      <div class="sh">Objet</div>
+      <div class="g2">
+        <div class="fg"><label>Denomination du projet</label><input id="NOM" placeholder="ex: Extension cabinet dentaire + appartement"></div>
+        <div class="fg"><label>Type de mission</label>
+          <select id="MISS">
+            <option>Avis sur plan - permis d'urbanisme</option>
+            <option>Avis sur plan - permis d'urbanisme (renovation)</option>
+            <option>Controle avant mise en service</option>
+            <option>Inspection periodique</option>
+          </select>
+        </div>
+        <div class="fg full"><label>Description</label><textarea id="MDSC" placeholder="ex: Avis sur plan d'un permis d'urbanisme relatif a l'extension et la renovation d'un cabinet dentaire et d'un appartement"></textarea></div>
+      </div>
+      <div class="sh">Demandeur</div>
+      <div class="g2">
+        <div class="fg"><label>Nom / Societe</label><input id="DEM" placeholder="ex: ARCADENTAL+ SRL"></div>
+        <div class="fg"><label>Representant</label><input id="REP" placeholder="ex: Stephane FARAH"></div>
+      </div>
+      <div class="sh">Situation</div>
+      <div class="g2">
+        <div class="fg"><label>Adresse</label><input id="ADR" placeholder="Rue, numero, CP, commune"></div>
+        <div class="fg"><label>Commune</label><input id="COM" placeholder="ex: Rixensart"></div>
+        <div class="fg"><label>Conditions d'acces</label><input id="ACC" placeholder="ex: A 15 km du poste de WAVRE"></div>
+        <div class="fg"><label>Ressources en eau</label><input id="EAU" value="Reseau public."></div>
+      </div>
+      <div class="sh">References</div>
+      <div class="g3">
+        <div class="fg"><label>Votre reference</label><input id="VREF" placeholder="ex: ref. fichier 758 - jan. 2024"></div>
+        <div class="fg"><label>Notre reference</label><input id="NREF" placeholder="ex: 01-001-2026"></div>
+        <div class="fg"><label>Agent traitant</label><input id="AGT" placeholder="ex: 1er Sgt. Marechal S."></div>
+      </div>
+      <div class="sh">Documents recus</div>
+      <div class="fg"><label>Architecte</label><input id="ARC" placeholder="ex: NG Architectes sprl, rue des Ateliers 31/101, 1332 Genval"></div>
+      <div class="fg"><label>Plans recus</label><textarea id="PLANS" placeholder="ex: Plans du bureau NG Architectes:&#10;- Situation projetee (1:500)&#10;- Plans cave, RDC, R+1, toiture (1:50)"></textarea></div>
+      <div class="sh">Antecedents</div>
+      <div class="fg"><textarea id="ANT" placeholder="Neant."></textarea></div>
+    </div>
+  </div>
+  <div class="bars">
+    <button class="btn btn-s" onclick="GO(1)">Retour</button>
+    <button class="btn btn-p" onclick="GO(3)">Continuer</button>
+  </div>
+</div>
+
+<div class="panel" id="P3">
+  <div class="card">
+    <div class="card-hd">3. Description du batiment</div>
+    <div class="card-body">
+      <div class="sh">Classification</div>
+      <div class="g3">
+        <div class="fg"><label>Type de batiment</label>
+          <select id="TYPE" onchange="onTyp()">
+            <option value="BB">BB - Batiment bas (h &lt;= 10m)</option>
+            <option value="BM">BM - Batiment moyen (10m &lt; h &lt;= 25m)</option>
+          </select>
+        </div>
+        <div class="fg"><label>Hauteur h calculee</label><input id="HAU" placeholder="ex: h = 9,5m -> BB"></div>
+        <div class="fg"><label>Fonction principale</label>
+          <select id="FON">
+            <option>Logements collectifs</option>
+            <option>Mixte logements + commerces</option>
+            <option>Bureaux / tertiaire</option>
+            <option>Commerce / ERP</option>
+            <option>Mixte logements + professionnel</option>
+          </select>
+        </div>
+      </div>
+      <div class="sh">Description par niveau</div>
+      <div class="g2">
+        <div class="fg"><label>Sous-sol (R-1)</label><input id="NSS" placeholder="ex: Cage d'escalier, caves, local technique"></div>
+        <div class="fg"><label>Rez-de-chaussee</label><input id="NRDC" placeholder="ex: Cabinet dentaire 160m2"></div>
+        <div class="fg"><label>1er etage (R+1)</label><input id="NR1" placeholder="ex: Appartement 87m2"></div>
+        <div class="fg"><label>2eme etage (R+2)</label><input id="NR2" placeholder="Si applicable"></div>
+        <div class="fg"><label>3eme etage (R+3)</label><input id="NR3" placeholder="Si applicable"></div>
+        <div class="fg"><label>Toiture / combles</label><input id="NTOIT" placeholder="ex: Toiture plate + terrasse bois"></div>
+      </div>
+      <div class="sh">Mode de chauffage</div>
+      <div class="g2">
+        <div class="fg"><label>Type</label>
+          <select id="CHAUF">
+            <option value="pac_ext">Pompe a chaleur exterieure</option>
+            <option value="chaudiere_gaz">Chaudiere gaz individuelle</option>
+            <option value="chaudiere_centrale">Chaudiere centrale collective</option>
+            <option value="electrique">Chauffage electrique</option>
+          </select>
+        </div>
+        <div class="fg"><label>Precision</label><input id="CHDET" placeholder="ex: PAC placee a l'arriere en facade"></div>
+      </div>
+    </div>
+  </div>
+  <div class="bars">
+    <button class="btn btn-s" onclick="GO(2)">Retour</button>
+    <button class="btn btn-p" onclick="GO(4)">Continuer</button>
+  </div>
+</div>
+
+<div class="panel" id="P4">
+  <div class="card">
+    <div class="card-hd">4. Hypotheses retenues</div>
+    <div class="card-body">
+      <div class="info info-blue">Ces hypotheses determinent les articles AR applicables.</div>
+      <div class="sh">Presence dans le batiment</div>
+      <div class="tg-grid">
+        <div class="tg-item"><span class="tg-label">Logements / appartements</span><label class="toggle"><input type="checkbox" id="HL" checked><span class="slider"></span></label></div>
+        <div class="tg-item"><span class="tg-label">Locaux professionnels / commerces</span><label class="toggle"><input type="checkbox" id="HC"><span class="slider"></span></label></div>
+        <div class="tg-item"><span class="tg-label">Sous-sol</span><label class="toggle"><input type="checkbox" id="HSS"><span class="slider"></span></label></div>
+        <div class="tg-item"><span class="tg-label">Parking interieur</span><label class="toggle"><input type="checkbox" id="HP"><span class="slider"></span></label></div>
+        <div class="tg-item"><span class="tg-label">Ascenseur</span><label class="toggle"><input type="checkbox" id="HA"><span class="slider"></span></label></div>
+        <div class="tg-item"><span class="tg-label">Installation de gaz</span><label class="toggle"><input type="checkbox" id="HG"><span class="slider"></span></label></div>
+        <div class="tg-item"><span class="tg-label">Escalier exterieur</span><label class="toggle"><input type="checkbox" id="HE"><span class="slider"></span></label></div>
+        <div class="tg-item"><span class="tg-label">Facade double paroi</span><label class="toggle"><input type="checkbox" id="HFD"><span class="slider"></span></label></div>
+      </div>
+      <div class="sh">Compartimentage prevu</div>
+      <div class="fg"><textarea id="COMP" placeholder="ex: Cabinet dentaire (RDC) + Logement (R+1) = 2 compartiments. Sous-sol: caves + local technique = compartiments distincts."></textarea></div>
+      <div class="sh">Observations</div>
+      <div class="fg"><textarea id="OBS" placeholder="Informations complementaires transmises par l'architecte..."></textarea></div>
+    </div>
+  </div>
+  <div class="bars">
+    <button class="btn btn-s" onclick="GO(3)">Retour</button>
+    <button class="btn btn-p" id="BAN" onclick="doAna()">
+      <span id="SAN" style="display:none" class="spin"></span>
+      Analyser les plans
+    </button>
+  </div>
+</div>
+
+<div class="panel" id="P5">
+  <div id="STATS" class="stats-row"></div>
+  <div class="cl-filter">
+    <button class="cl-filter-btn active" id="FALL" onclick="setFilt('all')">Tous les manquements</button>
+    <button class="cl-filter-btn" id="FNOK" onclick="setFilt('nok')">Non conformes</button>
+    <button class="cl-filter-btn" id="FQ" onclick="setFilt('q')">Info manquante</button>
+  </div>
+  <div id="CL"></div>
+  <div class="bars">
+    <button class="btn btn-s" onclick="GO(4)">Retour</button>
+    <button class="btn btn-p" id="BRP" onclick="buildRpt()" disabled>Generer le rapport</button>
+    <span class="btn-hint" id="HRP">Marquez les manquements</span>
+  </div>
+</div>
+
+<div class="panel" id="P6">
+  <div id="RPT"></div>
+  <div class="bars">
+    <button class="btn btn-s" onclick="GO(5)">Retour</button>
+    <button class="btn btn-g" id="BDOCX" onclick="expDocx()" disabled>Exporter .docx officiel</button>
+    <button class="btn btn-s" onclick="rstAll()">Nouveau projet</button>
+  </div>
+</div>
+
+</div>
+<script>
+var _F = [];
+var _D = {};
+var _S = {};
+var _B = 'BB';
+var _FL = 'all';
+
+var AR = [
+  {sec:'1. Implantation et chemins d acces', items:[
+    {id:'1.1',t:'Accessibilite permanente - vehicules incendie',
+     BB:'Les vehicules des services d incendie doivent pouvoir parvenir a au moins 60m d une facade du batiment (1 niveau) ou atteindre une facade donnant acces a chaque niveau (> 1 niveau).\n\nLa voie d acces presente:\n- Largeur libre >= 4m\n- Hauteur libre >= 4m\n- Rayon de braquage interieur >= 11m / exterieur >= 15m\n- Pente <= 6%\n- Capacite portante suffisante (13 tonnes par essieu)\n\nDes dispositions doivent etre prises pour maintenir la voie libre en permanence. Le parcage et le stationnement y seront interdits.',
+     BM:'Les vehicules des services d incendie doivent pouvoir atteindre une facade donnant acces a chaque niveau.\n\nLa voie d acces presente:\n- Largeur libre >= 4m\n- Hauteur libre >= 4m\n- Rayon de braquage interieur >= 11m / exterieur >= 15m\n- Pente <= 6%\n- Distance entre bord de voie et facade principale <= 10m\n\nDes dispositions doivent etre prises pour maintenir la voie libre en permanence.',
+     c:null},
+    {id:'1.2',t:'Constructions annexes - auvents, encorbellements',
+     BB:'Les constructions annexes, auvents, ouvrages en encorbellement ou autres adjonctions eventuelles ne peuvent pas empecher l evacuation des personnes ni l intervention des services d incendie.',
+     BM:'Les constructions annexes, auvents, ouvrages en encorbellement ou autres adjonctions eventuelles ne peuvent pas empecher l evacuation des personnes ni l intervention des services d incendie.',
+     c:null},
+    {id:'1.3',t:'Distance horizontale entre batiments',
+     BB:'La distance horizontale entre facades de batiments differents est au moins egale a (h+10)/2,5 x cos(alpha) metres.\nSi les batiments sont contigus: parois separatives presentent REI 60 ou EI 60.\n\nLa distance avec le batiment voisin n est pas renseignee sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'La distance horizontale entre facades de batiments differents est au moins egale a (h+10)/2,5 x cos(alpha) metres.\nSi les batiments sont contigus: parois separatives presentent REI 60 ou EI 60.\n\nLa distance avec le batiment voisin n est pas renseignee sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'1.4',t:'Facade principale accessible (BM uniquement)',
+     BB:null,
+     BM:'La facade principale, d une longueur au moins egale a la moitie de la longueur du batiment, doit etre accessible aux vehicules des services d incendie sur toute sa hauteur.\n\nChaque logement doit etre equipe d une baie d acces (largeur utile min. 80cm, hauteur utile min. 120cm) en facade a rue. La pose de lucarnes ou de fenetres de toit de type balcon est vivement recommandee.\n\nSi des fenetres de toit sont prevues: type a ouverture par projection uniquement (ouverture par rotation = proscrite).',
+     c:'BM'},
+  ]},
+  {sec:'2. Compartimentage et evacuation', items:[
+    {id:'2.1',t:'Superficie maximale des compartiments',
+     BB:'La superficie d un compartiment ne peut pas depasser 2500m2.\nException pour les batiments bas plain-pied: 3500m2, longueur maximale 90m.\nDerogation possible avec sprinklage et EFC appropries.',
+     BM:'La superficie d un compartiment ne peut pas depasser 2500m2, longueur maximale 90m.\nAucune exception pour les batiments plain-pied.\nDerogation possible avec sprinklage et EFC appropries.',
+     c:null},
+    {id:'2.2.1',t:'Nombre de sorties par compartiment',
+     BB:'< 100 occupants: 1 sortie minimum.\n>= 100 occupants: 2 sorties minimum.\n>= 500 occupants: 2 + n sorties.\n\nNombre d occupants calcule selon l article 1.6.2 de l annexe 1.',
+     BM:'< 100 occupants: 1 sortie minimum.\n>= 100 occupants: 2 sorties minimum.\n>= 500 occupants: 2 + n sorties.\n\nNombre d occupants calcule selon l article 1.6.2 de l annexe 1.',
+     c:null},
+    {id:'2.2.2',t:'Sorties - acces depuis logements a la cage d escalier',
+     BB:'Chaque sortie donne acces a une cage d escalier, a l exterieur ou a un chemin d evacuation conforme.\n\nPour les niveaux en sous-sol: parois EI 30, portes EI1 30.',
+     BM:'Chaque sortie donne acces a une cage d escalier, a l exterieur ou a un chemin d evacuation conforme.\n\nSi cage d escalier non directement accessible: prevoir terrasse d attente (plancher REI 60, facade E 60) ou garde-corps en retrait de 1m.\n\nPour les niveaux en sous-sol: parois EI 30, portes EI1 30.',
+     c:null},
+  ]},
+  {sec:'3. Elements de construction', items:[
+    {id:'3.1',t:'Traversees de parois resistantes au feu',
+     BB:'Les traversees de parois par des conduites de fluides ou d electricite et les joints de dilatation ne peuvent pas alterer le degre de resistance au feu exige.\n\nAnnexe 7 chapitre 1er applicable:\n- Cables electriques: mortier RF, platre ou laine de roche, ou manchons intumescents selon section\n- Conduits d air: resserrage soigneux + manchons intumescents ou clapets RF\n- L entrepreneur fournit un document ecrit reprenant la nature des produits et une attestation de bonne pose.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Les traversees de parois par des conduites de fluides ou d electricite et les joints de dilatation ne peuvent pas alterer le degre de resistance au feu exige.\n\nAnnexe 7 chapitre 1er applicable:\n- Cables electriques: mortier RF, platre ou laine de roche, ou manchons intumescents\n- Conduits d air: resserrage soigneux + manchons intumescents ou clapets RF\n- L entrepreneur fournit un document ecrit et une attestation de bonne pose.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'3.2',t:'Elements structuraux - stabilite au feu',
+     BB:'Tous les elements structuraux (colonnes, poutres, planchers, parois portantes) doivent presenter:\n- 1 niveau au-dessus du plancher de Ei: R 30\n- Plusieurs niveaux au-dessus du plancher de Ei: R 60\n- En-dessous de Ei (y compris plancher de Ei): R 60\n\nLes structures metalliques et en bois doivent etre protegees ou surdimensionnees.\nUne attestation d un ingenieur en stabilite sera transmise a la zone de secours lors de la reception des travaux.',
+     BM:'Tous les elements structuraux (colonnes, poutres, planchers, parois portantes) doivent presenter:\n- Au-dessus du plancher de Ei: R 60 (plus strict qu en BB)\n- En-dessous de Ei (y compris plancher de Ei): R 120\n\nLes structures metalliques et en bois doivent etre protegees ou surdimensionnees.\nUne attestation d un ingenieur en stabilite sera transmise a la zone de secours lors de la reception des travaux.',
+     c:null},
+    {id:'3.3',t:'Parois verticales interieures - locaux a occupation nocturne',
+     BB:'Les parois verticales interieures delimitant les logements presentent:\n- Si 1 seul niveau au-dessus de Ei: EI 30\n- Si plusieurs niveaux au-dessus de Ei ou en-dessous de Ei: EI 60\n\nLa porte d entree de chaque logement presente EI1 30.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Les parois verticales interieures delimitant chaque logement presentent EI 60 (quelle que soit la position par rapport au niveau d evacuation).\n\nLa porte d entree de chaque logement presente EI1 30.\n\nExigence plus stricte qu en BB: toujours EI 60, sans distinction du nombre de niveaux.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:'LOG'},
+    {id:'3.4',t:'Faux-plafonds dans chemins d evacuation',
+     BB:'Dans les chemins d evacuation et les locaux accessibles au public, les faux-plafonds presentent EI 30 ou une stabilite au feu d au moins 1/2h.\n\nLes parois RF sont prolongees dans l espace entre le plafond et le faux-plafond.\nSi cet espace n est pas sprinkle: division en volumes de 25m x 25m maximum par des ecrans A1/A2-s1,d0 EI 30.\n\nLors de la reception: PV de classement + attestation de placement.',
+     BM:'Dans les chemins d evacuation et les locaux accessibles au public, les faux-plafonds presentent EI 30 ou une stabilite au feu d au moins 1/2h.\n\nLes parois RF sont prolongees dans l espace entre le plafond et le faux-plafond.\n\nLors de la reception: PV de classement + attestation de placement.',
+     c:null},
+    {id:'3.5.1.1',t:'Facade simple paroi - jonctions RF entre compartiments',
+     BB:'Les montants constituant l ossature de facade sont fixes a chaque niveau a l ossature du batiment (R 60).\n\nLa liaison des parois de compartiment avec la facade presente au moins EI 60 (sauf joint lineaire <= 20mm).\nLes joints entre dalles et facades au droit des separations horizontales entre compartiments presentent au moins EI 60.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Les montants constituant l ossature de facade sont fixes a chaque niveau a l ossature du batiment (R 60).\n\nLa liaison des parois de compartiment avec la facade presente au moins EI 60 (sauf joint lineaire <= 20mm).\nLes joints entre dalles et facades au droit des separations horizontales entre compartiments presentent au moins EI 60.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'3.5.1.2',t:'Facades se faisant face - propagation entre compartiments',
+     BB:'Afin d eviter la propagation d un incendie entre compartiments via les facades:\n- Soit la distance entre les parties de facade ne presentant pas E30 est >= (h+10)/2,5 x cos(alpha)\n- Soit le rayonnement thermique entre facades de compartiments differents <= 15 kW/m2\n\nLa hauteur du batiment et la distance avec les constructions voisines ne sont pas renseignees sur les plans. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Afin d eviter la propagation d un incendie entre compartiments via les facades:\n- Soit la distance entre les parties de facade ne presentant pas E30 est >= (h+10)/2,5 x cos(alpha)\n- Soit le rayonnement thermique entre facades de compartiments differents <= 15 kW/m2\n\nLa hauteur du batiment et la distance avec les constructions voisines ne sont pas renseignees sur les plans. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+  ]},
+  {sec:'4. Construction et espaces d evacuation', items:[
+    {id:'4.1',t:'Parois entre compartiments - EI 30/60',
+     BB:'Les parois entre compartiments presentent au moins:\n- 1 niveau au-dessus du plancher de Ei: EI 30\n- Plusieurs niveaux au-dessus de Ei: EI 60\n- En-dessous de Ei (y compris plancher de Ei): EI 60\n\nLa communication entre deux compartiments n est autorisee qu au moyen d une porte EI1 30 a fermeture automatique.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Les parois entre compartiments presentent au moins:\n- 1 niveau au-dessus du plancher de Ei: EI 30\n- Plusieurs niveaux au-dessus de Ei: EI 60\n- En-dessous de Ei (y compris plancher de Ei): EI 60\n\nLa communication entre deux compartiments n est autorisee qu au moyen d une porte EI1 30 a fermeture automatique.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'4.2.1',t:'Cages d escalier - encloisonnement obligatoire',
+     BB:'Les escaliers qui relient plusieurs compartiments sont encloisonnes. Les principes de base du compartimentage et de l evacuation leur sont applicables.',
+     BM:'Les escaliers qui relient plusieurs compartiments sont encloisonnes. Les principes de base du compartimentage et de l evacuation leur sont applicables.',
+     c:null},
+    {id:'4.2.2.1',t:'Parois interieures des cages d escalier >= EI 60',
+     BB:'Les parois interieures des cages d escaliers presentent au moins EI 60.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Les parois interieures des cages d escaliers presentent au moins EI 60.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'4.2.2.2',t:'Cages d escalier -> acces niveau d evacuation',
+     BB:'Chaque cage d escalier interieure donne acces, directement ou par l intermediaire d un chemin d evacuation, a un niveau d evacuation.',
+     BM:'Chaque cage d escalier interieure donne acces, directement ou par l intermediaire d un chemin d evacuation, a un niveau d evacuation.',
+     c:null},
+    {id:'4.2.2.3',t:'Communication compartiment / cage - porte EI1 30 FA',
+     BB:'A chaque niveau, la communication entre le compartiment et la cage d escalier est assuree par une porte EI1 30 a fermeture automatique.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'A chaque niveau, la communication entre le compartiment et la cage d escalier est assuree par une porte EI1 30 a fermeture automatique.\n\nSi le nombre d appartements par cage et par niveau est superieur a 6: un sas est obligatoire entre le hall commun et la cage (parois EI 60, 2x portes EI1 30 FA).\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'4.2.2.4',t:'Cages communes a plusieurs compartiments',
+     BB:'Si une cage d escalier est commune a plusieurs compartiments, chaque compartiment y a acces par une porte EI1 30 a fermeture automatique.',
+     BM:'Si une cage d escalier est commune a plusieurs compartiments, chaque compartiment y a acces par une porte EI1 30 a fermeture automatique.',
+     c:null},
+    {id:'4.2.2.5',t:'Cages sous-sol distinctes des cages niveaux superieurs',
+     BB:'Les cages d escalier desservant les niveaux en sous-sol ne sont pas dans le prolongement direct des cages desservant les niveaux au-dessus du plancher de Ei.\nSi superposees: parois EI 60 et portes EI1 30.',
+     BM:'Les cages d escalier desservant les niveaux en sous-sol ne sont pas dans le prolongement direct des cages desservant les niveaux au-dessus du plancher de Ei.\nSi superposees: parois EI 60 et portes EI1 30.',
+     c:'SS'},
+    {id:'4.2.2.6',t:'Baie de ventilation en tete de cage >= 1m2',
+     BB:'Une baie de ventilation debouchant a l air libre est prevue a la partie superieure de chaque cage d escalier interieure.\n\nSection minimale: 1m2 (ou 0,5m2 si superficie <= 300m2 sur 2 niveaux maximum).\nCommande d ouverture manuelle, placee au niveau d evacuation entre 1,4m et 2m de hauteur, a moins de 2m de la porte d acces a la cage.\nConforme NBN S21-208/3.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Une baie de ventilation debouchant a l air libre est prevue a la partie superieure de chaque cage d escalier interieure.\n\nSection minimale: 1m2 (aucune exception en BM).\nCommande d ouverture manuelle, placee au niveau d evacuation entre 1,4m et 2m de hauteur.\nConforme NBN S21-208/3.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'4.2.3.1',t:'Escaliers - caracteristiques de resistance et geometrie',
+     BB:'Les escaliers et leurs paliers presentent R 30 (ou meme conception qu une dalle beton R 30).\nException: escaliers composes uniquement de materiaux A1 (ex: acier).\n\nCaracteristiques geometriques:\n- Giron des marches >= 20cm en tout point\n- Hauteur des marches <= 18cm\n- Pente <= 75%\n- Mains courantes de chaque cote (une seule si largeur utile < 120cm)',
+     BM:'Les escaliers et leurs paliers presentent R 60 (plus strict qu en BB).\nContre-marches pleines obligatoires.\n\nCaracteristiques geometriques:\n- Giron des marches >= 20cm en tout point\n- Hauteur des marches <= 18cm\n- Pente <= 75%\n- Mains courantes de chaque cote',
+     c:null},
+    {id:'4.2.3.2',t:'Largeur utile escaliers et paliers >= 0,80m',
+     BB:'La largeur utile des escaliers et paliers est d au moins 0,80m.\nLes volees et paliers d une meme cage d escalier ne different pas de plus d une unite de passage (0,60m).',
+     BM:'La largeur utile des escaliers et paliers est d au moins 0,80m.\nLes volees et paliers d une meme cage d escalier ne different pas de plus d une unite de passage (0,60m).',
+     c:null},
+    {id:'4.3',t:'Escaliers exterieurs - classe A1',
+     BB:'Les escaliers exterieurs donnent acces a un niveau d evacuation.\nAucune stabilite au feu n est requise, mais le materiau est de classe A1.\n\nLes informations relatives aux materiaux de l escalier exterieur ne sont pas renseignees sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Les escaliers exterieurs donnent acces a un niveau d evacuation.\nAucune stabilite au feu n est requise, mais le materiau est de classe A1.\n\nLes informations relatives aux materiaux de l escalier exterieur ne sont pas renseignees sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:'ESC'},
+    {id:'4.4.1.1',t:'Largeur utile chemins d evacuation >= 0,80m',
+     BB:'La largeur utile des chemins d evacuation, des coursives et de leurs portes est d au moins:\n- 0,80m pour les chemins d evacuation et les portes\n- 0,60m pour les coursives\n\nToute porte de 80cm de largeur utile necessite une baie d au moins 95cm.',
+     BM:'La largeur utile des chemins d evacuation, des coursives et de leurs portes est d au moins:\n- 0,80m pour les chemins d evacuation et les portes\n- 0,60m pour les coursives\n\nToute porte de 80cm de largeur utile necessite une baie d au moins 95cm.',
+     c:null},
+    {id:'4.4.1.3',t:'Portes - pas de verrouillage cote evacuation',
+     BB:'Sur le parcours des chemins d evacuation, les portes ne peuvent comporter de verrouillage empechant leur utilisation dans le sens de l evacuation.\nToutes les portes doivent pouvoir s ouvrir facilement et immediatement par toute personne en cas d urgence.',
+     BM:'Sur le parcours des chemins d evacuation, les portes ne peuvent comporter de verrouillage empechant leur utilisation dans le sens de l evacuation.\nToutes les portes doivent pouvoir s ouvrir facilement et immediatement par toute personne en cas d urgence.',
+     c:null},
+    {id:'4.4.2',t:'Chemins d evacuation au niveau Ei - parois EI 60',
+     BB:'Au niveau d evacuation, les parois verticales interieures des chemins d evacuation reliant les cages d escalier aux sorties presentent EI 60.\nLes portes y donnant acces presentent EI1 30 et sont a fermeture automatique.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     BM:'Au niveau d evacuation, les parois verticales interieures des chemins d evacuation reliant les cages d escalier aux sorties presentent EI 60.\nLes portes y donnant acces presentent EI1 30 et sont a fermeture automatique.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:null},
+    {id:'4.4.3',t:'Chemins d evacuation autres niveaux - parois EI 30',
+     BB:'Aux autres niveaux, les parois verticales interieures des chemins d evacuation presentent EI 30.\nLes portes presentent EI1 30 et sont a fermeture automatique.\nException: compartiments a occupation exclusivement diurne et superficie < 1250m2.',
+     BM:'Aux autres niveaux, les parois verticales interieures des chemins d evacuation presentent EI 30.\nLes portes presentent EI1 30 et sont a fermeture automatique.\nException: compartiments a occupation exclusivement diurne et superficie < 1250m2.',
+     c:null},
+    {id:'4.4.4',t:'Sas acces cage d escalier - BM > 6 appts/niveau',
+     BB:null,
+     BM:'Si le nombre d appartements par cage d escalier et par niveau est superieur a 6:\nUn sas est obligatoire entre le hall commun et la cage d escalier.\n- Superficie utile >= 2m2\n- Parois EI 60\n- 2 portes EI1 30 a fermeture automatique\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:'BM'},
+    {id:'4.5',t:'Signalisation - numeros de niveaux dans cages',
+     BB:'Le numero d ordre de chaque niveau est indique de maniere visible dans la cage d escalier, a chaque acces a la cage.',
+     BM:'Le numero d ordre de chaque niveau est indique de maniere visible dans la cage d escalier, a chaque acces a la cage.',
+     c:null},
+  ]},
+  {sec:'5. Locaux et espaces techniques', items:[
+    {id:'5.1.1',t:'Local technique = compartiment distinct (different des caves)',
+     BB:'Un local technique ou un ensemble de locaux techniques constitue un compartiment distinct, separe des caves.\n\nLes prescriptions relatives aux compartiments sont applicables:\n- Parois: REI 60 ou EI 60\n- Portes: EI1 30 a fermeture automatique',
+     BM:'Un local technique ou un ensemble de locaux techniques constitue un compartiment distinct, separe des caves.\n\nLes prescriptions relatives aux compartiments sont applicables:\n- Parois: REI 60 ou EI 60\n- Portes: EI1 30 a fermeture automatique',
+     c:null},
+    {id:'5.1.2.2',t:'Chaufferie - conception selon annexe 7 point 4',
+     BB:'La conception, la construction et l amenagement des chaufferies satisfont aux dispositions du point 4 de l annexe 7 de l AR du 7 juillet 1994.\n\nNote: une pompe a chaleur exterieure ne constitue pas une chaufferie - l article 5.1.2.2 n est pas applicable.',
+     BM:'La conception, la construction et l amenagement des chaufferies satisfont aux dispositions du point 4 de l annexe 7 de l AR du 7 juillet 1994.\n\nNote: une pompe a chaleur exterieure ne constitue pas une chaufferie - l article 5.1.2.2 n est pas applicable.',
+     c:'CHAUF'},
+    {id:'5.1.4',t:'Gaines verticales et horizontales (BM uniquement)',
+     BB:null,
+     BM:'Les prescriptions de l article 5.1.4 de l annexe 3/1 sont applicables aux gaines verticales et horizontales traversant les compartiments.\n\nLes gaines presentent EI 60. Des registres coupe-feu sont installes au droit de chaque paroi de compartiment traversee.\n\nN apparait pas sur les plans transmis. Des renseignements complementaires sont demandes a l architecte.',
+     c:'BM'},
+    {id:'5.2.1',t:'Parking interieur - R120, EFC si > 625m2',
+     BB:'Les elements structuraux du parking presentent R 120.\n\nSi superficie > 625m2: installation d evacuation des fumees et de la chaleur (EFC) obligatoire.\nSi superficie > 1250m2: installation de detection automatique d incendie (DAI) conforme NBN S21-100 obligatoire.',
+     BM:'Les elements structuraux du parking presentent R 120.\n\nSi superficie > 625m2: installation d evacuation des fumees et de la chaleur (EFC) obligatoire.\nSi superficie > 1250m2: installation de detection automatique d incendie (DAI) conforme NBN S21-100 obligatoire.',
+     c:'PARK'},
+  ]},
+  {sec:'6. Installations techniques', items:[
+    {id:'6.4',t:'Ascenseurs - AR 09/03/2009',
+     BB:'Les prescriptions de l AR du 09/03/2009 relatif a la securite des ascenseurs sont applicables.\n\nLa gaine de l ascenseur presente EI 60.\nLes portes paliers presentent une resistance au feu appropriee.\nUn dispositif de rappel automatique au niveau d evacuation est prevu en cas d incendie.',
+     BM:'Les prescriptions de l AR du 09/03/2009 relatif a la securite des ascenseurs sont applicables.\n\nLa gaine de l ascenseur presente EI 60.\nLes portes paliers presentent une resistance au feu appropriee.\nUn dispositif de rappel automatique au niveau d evacuation est prevu en cas d incendie.',
+     c:'ASC'},
+    {id:'6.5.1',t:'Installations electriques - RGIE',
+     BB:'Les installations electriques de basse tension, de force motrice, d eclairage et de signalisation sont conformes au RGIE.\n\nElles sont controlees par un organisme agree par le SPF Economie avant leur mise en fonction.\nUne copie du rapport de controle sera remise a la zone de secours.',
+     BM:'Les installations electriques de basse tension, de force motrice, d eclairage et de signalisation sont conformes au RGIE.\n\nElles sont controlees par un organisme agree par le SPF Economie avant leur mise en fonction.\nUne copie du rapport de controle sera remise a la zone de secours.',
+     c:null},
+    {id:'6.5.2',t:'Canalisations circuits de securite - PH 60 (BM uniquement)',
+     BB:null,
+     BM:'Les canalisations electriques alimentant les installations dont le maintien en service est indispensable en cas de sinistre (eclairage de securite, alarme, detection, desenfumage) presentent:\n- PH 60 pour les cables de section <= 20mm et section <= 2,5mm2\n- Rf 1h selon NBN 713-020 pour les autres cas',
+     c:'BM'},
+    {id:'6.5.4',t:'Eclairage de securite >= 1 lux / 5 lux aux points dangereux',
+     BB:'Un eclairage de securite est prevu dans tous les locaux (minimum 1 lux, 5 lux aux endroits dangereux).\nAlimentation par source autonome en cas de coupure.\nConforme aux normes NBN EN 1838, NBN EN 50172 et NBN EN 60598-2-22.\n\nLa conformite est verifiee par un organisme agree.\nUne copie de l attestation sera remise a la zone de secours.',
+     BM:'Un eclairage de securite est prevu dans tous les locaux (minimum 1 lux, 5 lux aux endroits dangereux).\nAlimentation par source autonome en cas de coupure.\nConforme aux normes NBN EN 1838, NBN EN 50172 et NBN EN 60598-2-22.\n\nLa conformite est verifiee par un organisme agree.\nUne copie de l attestation sera remise a la zone de secours.',
+     c:null},
+    {id:'6.6',t:'Installations de gaz - NBN D 51-003',
+     BB:'Les installations alimentees en gaz combustible repondent aux prescriptions de la norme NBN D 51-003.\n\nUne attestation certifiant la conformite des installations sera remise a la zone de secours.\nLes canalisations de gaz sont peintes en couleur jaune ocre (RAL 1004) sur toute leur longueur.\nLe branchement prive est equipe d une vanne en trottoir signalee G.\nLes compteurs sont installes dans un local ventile basse et haute.',
+     BM:'Les installations alimentees en gaz combustible repondent aux prescriptions de la norme NBN D 51-003.\n\nUne attestation certifiant la conformite des installations sera remise a la zone de secours.\nLes canalisations de gaz sont peintes en couleur jaune ocre (RAL 1004).\nLe branchement prive est equipe d une vanne en trottoir signalee G.',
+     c:'GAZ'},
+    {id:'6.7',t:'Installations aerauliques - art. 6.7',
+     BB:'La conformite des eventuelles installations aerauliques aux prescriptions des articles 6.7.1 a 6.7.6 doit etre verifiee par un organisme independant.\n\nUne copie du PV de controle sera remise a la zone de secours.',
+     BM:'La conformite des eventuelles installations aerauliques aux prescriptions des articles 6.7.1 a 6.7.6 doit etre verifiee par un organisme independant.\n\nUne copie du PV de controle sera remise a la zone de secours.',
+     c:null},
+    {id:'6.8.4',t:'Alarme incendie - signal perceptible en tout point',
+     BB:'Il y a lieu d equiper le batiment d une installation d alarme incendie constituee de boutons poussoirs sous vitre a briser ou a pousser actionnant une sirene audible de maniere significative par tous les occupants en tout point du batiment.\n\nBoutons places a proximite des baies de passage vers l exterieur, sur les paliers et dans les degagements.\nL installation fonctionne meme en cas de coupure de l alimentation electrique.',
+     BM:'Il y a lieu d equiper le batiment d une installation d alarme incendie constituee de boutons poussoirs sous vitre a briser ou a pousser actionnant une sirene audible de maniere significative par tous les occupants en tout point du batiment.\n\nBoutons places a proximite des baies de passage vers l exterieur, sur les paliers et dans les degagements.\nL installation fonctionne meme en cas de coupure de l alimentation electrique.',
+     c:null},
+    {id:'6.8.5.2',t:'Extincteurs portatifs - 1 par 150m2 et par niveau',
+     BB:'Il y a lieu d installer au minimum un extincteur de 6kg de poudre ABC ou de 6 litres a eau pulverisee avec additif par 150m2 de surface totale et par niveau.\n\nMarque CE obligatoire. Label BENOR vivement recommande.\nLes extincteurs sont fixes au mur et signales conformement a la reglementation.',
+     BM:'Il y a lieu d installer au minimum un extincteur de 6kg de poudre ABC ou de 6 litres a eau pulverisee avec additif par 150m2 de surface totale et par niveau.\n\nMarque CE obligatoire. Label BENOR vivement recommande.\nLes extincteurs sont fixes au mur et signales conformement a la reglementation.',
+     c:null},
+    {id:'6.8.5.3',t:'Robinets d incendie armes - RIA (BM si superficie > 500m2)',
+     BB:null,
+     BM:'Si la superficie totale du batiment est superieure a 500m2: un reseau de robinets d incendie armes (RIA) conformes a la norme NBN EN 671-1 est obligatoire.\n\nDimensionnement:\n- Pression >= 2,5 bars et debit >= 72 L/min (3 RIA simultanes pendant 30 min)\n- Canalisations peintes en rouge (RAL 3000)',
+     c:'BM'},
+    {id:'6.8.5.4.2',t:'Borne incendie <= 100m (commercial) / 200m (ailleurs)',
+     BB:'La presence d une bouche ou d une borne aerienne d incendie est indispensable:\n- <= 100m en zone industrielle, commerciale ou a forte densite de population\n- <= 200m ailleurs\n\nSi tel n est pas le cas: faire installer une borne aerienne d incendie conforme NBN S21-019.',
+     BM:'La presence d une bouche ou d une borne aerienne d incendie est indispensable:\n- <= 100m en zone industrielle, commerciale ou a forte densite de population\n- <= 200m ailleurs\n\nSi tel n est pas le cas: faire installer une borne aerienne d incendie conforme NBN S21-019.',
+     c:null},
+  ]},
+  {sec:'Annexe 5/1 - Reaction au feu', items:[
+    {id:'A5-2',t:'Type d occupation (1/2/3) - a communiquer a l autorite',
+     BB:'Le batiment est reparti dans les classes suivantes selon le risque lie a l occupation:\n- Type 1: occupants non-autonomes\n- Type 2: occupants autonomes et dormants\n- Type 3: occupants autonomes et vigilants\n\nLe maitre d ouvrage ou l exploitant determine le type et le communique a l autorite competente.\nA defaut: le batiment est classe type 1.',
+     BM:'Le batiment est reparti dans les classes suivantes selon le risque lie a l occupation:\n- Type 1: occupants non-autonomes\n- Type 2: occupants autonomes et dormants\n- Type 3: occupants autonomes et vigilants\n\nLe maitre d ouvrage ou l exploitant determine le type et le communique a l autorite competente.\nA defaut: le batiment est classe type 1.',
+     c:null},
+    {id:'A5-I',t:'Reaction au feu - locaux a risque accru (tableau I)',
+     BB:'Les locaux techniques, parkings, salles des machines, gaines techniques et cuisines collectives presentent:\n- Parois verticales: A2-s3, d2\n- Plafonds et faux-plafonds: A2-s3, d0 (d2 si local < 30m2)\n- Sols: A2FL-s2 ou BFL-s2\n\nLors de la reception: preuve du respect (marquage CE ou rapport de classement + attestation de pose).',
+     BM:'Les locaux techniques, parkings, salles des machines, gaines techniques et cuisines collectives presentent:\n- Parois verticales: A2-s3, d2\n- Plafonds et faux-plafonds: A2-s3, d0\n- Sols: A2FL-s2 ou BFL-s2\n\nLors de la reception: preuve du respect.',
+     c:null},
+    {id:'A5-II',t:'Reaction au feu - revetements parois interieures (tableau II)',
+     BB:'Les revetements de parois interieures, plafonds et sols dans les locaux respectent les classes du tableau II de l annexe 5/1 selon le type d occupation.\n\nExemple type 3 (vigilants), autres locaux:\n- Parois verticales: E-d2\n- Plafonds: E (d2 si local < 30m2)\n- Sols: EFL\n\nLors de la reception: informations accompagnant le marquage CE, ou rapport de classement + attestation de pose.',
+     BM:'Les revetements de parois interieures, plafonds et sols dans les locaux respectent les classes du tableau II de l annexe 5/1 selon le type d occupation.\n\nLors de la reception: informations accompagnant le marquage CE, ou rapport de classement + attestation de pose.',
+     c:null},
+    {id:'A5-III',t:'Reaction au feu - chemins d evacuation et cages (tableau III)',
+     BB:'Les revetements des chemins d evacuation et des cages d escalier respectent les classes du tableau III.\n\nPour les cages d escalier (type 3):\n- Parois verticales: C-s3, d2\n- Plafonds et faux-plafonds: C-s3, d0\n- Sols: CFL-s2\n\nLors de la reception: attestations a transmettre a la zone de secours.',
+     BM:'Les revetements des chemins d evacuation et des cages d escalier respectent les classes du tableau III.\n\nPour les cages d escalier (type 3):\n- Parois verticales: C-s3, d2\n- Plafonds et faux-plafonds: C-s3, d0\n- Sols: CFL-s2\n\nLors de la reception: attestations a transmettre a la zone de secours.',
+     c:null},
+    {id:'A5-6',t:'Facades exterieures - reaction au feu (tableau V)',
+     BB:'Les produits utilises pour les revetements des facades respectent le tableau V:\n- Revetement exterieur: classe D-s3, d2 minimum\n- Composants substantiels de la facade: classe A2-s3, d0 minimum\n- Montants de l ossature: classe A1\n\nLors de la reception: attestations a transmettre.',
+     BM:'Les produits utilises pour les revetements des facades respectent le tableau V:\n- Revetement exterieur: classe B-s3, d1 minimum (plus strict qu en BB)\n- Composants substantiels de la facade: classe A2-s3, d0 minimum\n- Montants de l ossature: classe A1\n\nLors de la reception: attestations a transmettre.',
+     c:null},
+    {id:'A5-8',t:'Toitures - classe BROOF(t1)',
+     BB:'Les produits pour les revetements des toitures presentent la classe BROOF(t1).\n\nElements concernes:\n- Etancheite des toitures plates\n- Couverture des versants (y compris annexes, auvents)\n- Revetement des balcons, terrasses et coursives\n- Lanterneaux, coupoles, fenetres de toit\n- Panneaux solaires et/ou photovoltaiques\n\nPour les terrasses en bois: conditions specifiques selon art. 8.3 (densite >= 750 kg/m3, epaisseur 21-40mm, largeur >= 120mm, joint 4-6mm).\n\nLors de la reception: attestations a transmettre.',
+     BM:'Les produits pour les revetements des toitures presentent la classe BROOF(t1).\n\nElements concernes:\n- Etancheite des toitures plates\n- Couverture des versants\n- Revetement des balcons, terrasses et coursives\n- Lanterneaux, coupoles, fenetres de toit\n- Panneaux solaires et/ou photovoltaiques\n\nLors de la reception: attestations a transmettre.',
+     c:null},
+  ]},
+  {sec:'AGW 21/10/2004 - Detecteurs de fumee logements', items:[
+    {id:'AGW',t:'Detecteur de fumee optique certifie BOSEC par logement',
+     BB:'Chaque logement est equipe d au moins un detecteur de fumee optique certifie BOSEC, par niveau comportant au moins une piece d habitation.\n\nSi superficie d un niveau > 80m2: au moins 2 detecteurs requis pour ce niveau.\nSi >= 4 detecteurs necessaires: les detecteurs sont interconnectes ou raccordes a une centrale de detection.\n\nInstallation conforme a l article 4 de l AGW du 21/10/2004.\nMateriel certifie BOSEC, type optique obligatoire.',
+     BM:'Chaque logement est equipe d au moins un detecteur de fumee optique certifie BOSEC, par niveau comportant au moins une piece d habitation.\n\nSi superficie d un niveau > 80m2: au moins 2 detecteurs requis.\nSi >= 4 detecteurs necessaires: les detecteurs sont interconnectes ou raccordes a une centrale.\n\nMateriel certifie BOSEC, type optique obligatoire.',
+     c:'LOG'},
+  ]},
+];
+
+function GO(n){
+  for(var i=1;i<=6;i++){
+    var p=document.getElementById('P'+i);
+    var s=document.getElementById('S'+i);
+    if(p) p.className='panel'+(i===n?' active':'');
+    if(s){var cl='step';if(i===n)cl+=' active';else if(i<n)cl+=' done';s.className=cl;}
+  }
+}
+
+function onTyp(){
+  _B=document.getElementById('TYPE').value;
+  drCL();
+}
+
+function dgOv(e){e.preventDefault();document.getElementById('DZ').className='dz over';}
+function dgLv(e){document.getElementById('DZ').className='dz';}
+function dgDp(e){e.preventDefault();document.getElementById('DZ').className='dz';addF(e.dataTransfer.files);}
+
+function addF(fl){
+  for(var i=0;i<fl.length;i++){
+    var f=fl[i];
+    var ex=false;
+    for(var j=0;j<_F.length;j++){if(_F[j].name===f.name){ex=true;break;}}
+    if(ex||_F.length>=5) continue;
+    _F.push(f);
+    ldF(f);
+  }
+  rnFL();
+}
+
+function ldF(f){
+  _D[f.name]='loading';
+  rnFL();
+  var r=new FileReader();
+  r.onload=function(e){_D[f.name]=e.target.result;rnFL();};
+  r.onerror=function(){_D[f.name]='error';rnFL();};
+  r.readAsDataURL(f);
+}
+
+function rmF(i){delete _D[_F[i].name];_F.splice(i,1);document.getElementById('FI').value='';rnFL();}
+
+function rnFL(){
+  var fl=document.getElementById('FL');
+  var btn=document.getElementById('BP1');
+  var hint=document.getElementById('HP1');
+  var html='';
+  var ok=_F.length>0;
+  for(var i=0;i<_F.length;i++){
+    var f=_F[i];
+    var d=_D[f.name];
+    var rdy=d&&d!=='loading'&&d!=='error'&&d.startsWith('data:');
+    if(!rdy) ok=false;
+    var sz=f.size>1048576?(f.size/1048576).toFixed(1)+' Mo':Math.round(f.size/1024)+' Ko';
+    html+='<div class="fi"><span class="fi-name">'+f.name+'</span><span class="fi-size">'+sz+'</span><span class="fi-st '+(rdy?'ready':'loading')+'">'+(rdy?'Pret':'Chargement...')+'</span><button class="fi-del" onclick="rmF('+i+')">x</button></div>';
+  }
+  if(fl) fl.innerHTML=html;
+  if(btn) btn.disabled=_F.length===0;
+  if(hint) hint.textContent=_F.length>0?_F.length+' fichier(s)'+(ok?' - Prets':' - Chargement...'):'Chargez au moins un plan';
+}
+
+function getH(){
+  return{
+    LOG:document.getElementById('HL').checked,
+    SS:document.getElementById('HSS').checked,
+    PARK:document.getElementById('HP').checked,
+    ASC:document.getElementById('HA').checked,
+    GAZ:document.getElementById('HG').checked,
+    ESC:document.getElementById('HE').checked,
+    BM:_B==='BM',
+    CHAUF:(document.getElementById('CHAUF').value==='chaudiere_gaz'||document.getElementById('CHAUF').value==='chaudiere_centrale'),
+  };
+}
+
+function appl(item,h){
+  if(!item.c) return true;
+  var m={LOG:h.LOG,SS:h.SS,PARK:h.PARK,ASC:h.ASC,GAZ:h.GAZ,ESC:h.ESC,BM:h.BM,CHAUF:h.CHAUF};
+  return !!m[item.c];
+}
+
+function gEx(item){return _B==='BM'?item.BM:item.BB;}
+
+function setDef(bat,h){
+  for(var si=0;si<AR.length;si++){
+    var sec=AR[si];
+    for(var ii=0;ii<sec.items.length;ii++){
+      var item=sec.items[ii];
+      if(!appl(item,h)||!gEx(item)){_S[item.id]='na';}
+      else{_S[item.id]='q';}
+    }
+  }
+}
+
+function doAna(){
+  _S={};
+  var btn=document.getElementById('BAN');
+  var sp=document.getElementById('SAN');
+  if(btn) btn.disabled=true;
+  if(sp) sp.style.display='inline-block';
+  var h=getH();
+  setDef(_B,h);
+  if(_F.length===0){fin(btn,sp);return;}
+  // Appel direct sans cle API (gere cote serveur)
+  callApi(null,h,btn,sp);
+}
+
+function fin(btn,sp){
+  if(btn) btn.disabled=false;
+  if(sp) sp.style.display='none';
+  GO(5);
+  drCL();
+}
+
+function callApi(_key,h,btn,sp){
+  // Construire la liste des images a envoyer
+  var images=[];
+  for(var i=0;i<_F.length&&i<5;i++){
+    var f=_F[i];
+    var d=_D[f.name];
+    if(!d||!d.startsWith('data:')) continue;
+    var b64=d.split(',')[1];
+    if(!b64) continue;
+    images.push({b64:b64,mime_type:f.type,name:f.name});
+  }
+  if(images.length===0){fin(btn,sp);return;}
+
+  // Construire la liste des IDs a analyser
+  var ids=[];
+  for(var si=0;si<AR.length;si++){
+    for(var ii=0;ii<AR[si].items.length;ii++){
+      var item=AR[si].items[ii];
+      if(appl(item,h)&&gEx(item)) ids.push(item.id);
+    }
+  }
+
+  var nom=(document.getElementById('NOM')||{}).value||'';
+
+  // Appel via serveur Flask
+  fetch('/api/analyze_plans',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      images:images,
+      project_info:{type_batiment:_B,nom:nom,hypotheses:h,ids:ids}
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(res){
+    if(res&&!res.error){
+      if(res.statuses){for(var k in res.statuses){_S[k]=res.statuses[k];}}
+      if(res.type_batiment){_B=res.type_batiment;var sel=document.getElementById('TYPE');if(sel) sel.value=_B;}
+    }
+    fin(btn,sp);
+  })
+  .catch(function(){fin(btn,sp);});
+}
+
+function setFilt(f){
+  _FL=f;
+  document.getElementById('FALL').className='cl-filter-btn'+(f==='all'?' active':'');
+  document.getElementById('FNOK').className='cl-filter-btn'+(f==='nok'?' active':'');
+  document.getElementById('FQ').className='cl-filter-btn'+(f==='q'?' active':'');
+  drCL();
+}
+
+function setSt(id,st){_S[id]=st;drCL();}
+
+function drCL(){
+  var h=getH();
+  var cl=document.getElementById('CL');
+  if(!cl) return;
+  var ann=_B==='BB'?'2/1':'3/1';
+  var cNok=0,cQ=0,cOk=0;
+  var html='';
+
+  for(var si=0;si<AR.length;si++){
+    var sec=AR[si];
+    var secH='';
+    var sNok=0,sQ=0;
+
+    for(var ii=0;ii<sec.items.length;ii++){
+      var item=sec.items[ii];
+      if(!appl(item,h)) continue;
+      var ex=gEx(item);
+      if(!ex) continue;
+      var st=_S[item.id]||'q';
+      if(st==='ok') cOk++;
+      else if(st==='nok'){cNok++;sNok++;}
+      else if(st==='q'){cQ++;sQ++;}
+
+      if(st==='ok'||st==='na') continue;
+      if(_FL==='nok'&&st!=='nok') continue;
+      if(_FL==='q'&&st!=='q') continue;
+
+      secH+='<div class="cl-row '+st+'">'
+        +'<div class="cl-left">'
+        +'<div class="cl-art">Art. '+item.id+' - Annexe '+ann+'</div>'
+        +'<div class="cl-title">'+item.t+'</div>'
+        +'<span class="cl-badge badge-'+st+'">'+(st==='nok'?'Non conforme':'Information manquante sur les plans')+'</span>'
+        +'<div class="cl-exig">'+ex+'</div>'
+        +'</div>'
+        +'<div class="cl-stbs">'
+        +'<div class="stb ok'+(st==='ok'?' on':'')+'" onclick="setSt(\''+item.id+'\',\'ok\')" title="Conforme">v</div>'
+        +'<div class="stb nok'+(st==='nok'?' on':'')+'" onclick="setSt(\''+item.id+'\',\'nok\')" title="Non conforme">x</div>'
+        +'<div class="stb q'+(st==='q'?' on':'')+'" onclick="setSt(\''+item.id+'\',\'q\')" title="Info manquante">?</div>'
+        +'<div class="stb na" onclick="setSt(\''+item.id+'\',\'na\')" title="Non applicable">-</div>'
+        +'</div>'
+        +'</div>';
+    }
+
+    if(secH){
+      html+='<div class="cl-sec">'
+        +'<div class="cl-sec-hd"><span>'+sec.sec+'</span>'
+        +(sNok>0?'<span class="cl-sec-cnt" style="background:#fecaca;color:#991b1b">'+sNok+' non conformes</span>':'')
+        +(sQ>0?'<span class="cl-sec-cnt" style="background:#fde68a;color:#92400e;margin-left:4px">'+sQ+' info manquante</span>':'')
+        +'</div>'
+        +'<div>'+secH+'</div></div>';
+    }
+  }
+
+  if(!html){
+    html='<div class="empty-cl">'+(cOk>0?'Aucun manquement - tous les points verificables sont conformes.':'Lancez l analyse des plans pour identifier les manquements.')+'</div>';
+  }
+
+  cl.innerHTML=html;
+
+  var st=document.getElementById('STATS');
+  if(st){
+    st.innerHTML='<div class="sc nok"><div class="sc-n">'+cNok+'</div><div class="sc-l">Non conformes</div></div>'
+      +'<div class="sc q"><div class="sc-n">'+cQ+'</div><div class="sc-l">Info manquante</div></div>'
+      +'<div class="sc ok"><div class="sc-n">'+cOk+'</div><div class="sc-l">Conformes</div></div>';
+  }
+
+  var total=cNok+cQ;
+  var btn=document.getElementById('BRP');
+  var hint=document.getElementById('HRP');
+  if(btn) btn.disabled=total===0;
+  if(hint) hint.textContent=total>0?total+' manquement(s) a inclure dans le rapport':'Aucun manquement a signaler';
+}
+
+function buildRpt(){
+  var zone=(document.getElementById('ZONE')||{}).value||'ZSBW';
+  var bat=_B;
+  var ann=bat==='BB'?'2/1':'3/1';
+  var nom=(document.getElementById('NOM')||{}).value||'Projet';
+  var adr=(document.getElementById('ADR')||{}).value||'';
+  var agt=(document.getElementById('AGT')||{}).value||'';
+  var date=new Date().toLocaleDateString('fr-BE',{day:'2-digit',month:'long',year:'numeric'});
+  var h=getH();
+  var nokIds=[],qIds=[];
+  for(var k in _S){if(_S[k]==='nok') nokIds.push(k);else if(_S[k]==='q') qIds.push(k);}
+  var cOk=0;for(var k in _S){if(_S[k]==='ok') cOk++;}
+
+  var html='<div class="rpt-hd">'
+    +'<div style="font-size:10px;color:#888;font-family:monospace;margin-bottom:3px">'+zone+' - '+bat+' - Annexe '+ann+' - '+date+'</div>'
+    +'<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:2px">'+nom+'</div>'
+    +'<div style="font-size:11px;color:#9ca3af">'+adr+' - '+agt+'</div>'
+    +'</div>'
+    +'<div class="rpt-body">'
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">'
+    +'<div class="sc nok"><div class="sc-n">'+nokIds.length+'</div><div class="sc-l">Non conformes</div></div>'
+    +'<div class="sc q"><div class="sc-n">'+qIds.length+'</div><div class="sc-l">Info manquante</div></div>'
+    +'<div class="sc ok"><div class="sc-n">'+cOk+'</div><div class="sc-l">Conformes</div></div>'
+    +'</div>'
+    +'<div style="font-size:13px;font-weight:700;padding-bottom:8px;border-bottom:2px solid #e5e7eb;margin-bottom:14px">6. Motivation - Points a traiter</div>';
+
+  var num=1;
+  for(var si=0;si<AR.length;si++){
+    var sec=AR[si];
+    var items=[];
+    for(var ii=0;ii<sec.items.length;ii++){
+      var item=sec.items[ii];
+      var st=_S[item.id];
+      if(st==='nok'||st==='q'){
+        var ex=gEx(item);
+        if(ex) items.push({item:item,st:st,ex:ex});
+      }
+    }
+    if(!items.length) continue;
+    html+='<div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px;padding-bottom:5px;border-bottom:1px solid #f3f4f6">'+sec.sec+'</div>';
+    for(var ji=0;ji<items.length;ji++){
+      var x=items[ji];
+      html+='<div class="rpt-pt '+x.st+'">'
+        +'<div class="rpt-ptitle">'+num+'. '+x.item.t+'</div>'
+        +'<div class="rpt-pref">Annexe '+ann+' art.'+x.item.id+(x.st==='nok'?' - NON CONFORME':' - INFORMATION MANQUANTE')+'</div>'
+        +'<div class="rpt-ptext">'+x.ex+'</div>'
+        +'</div>';
+      num++;
+    }
+  }
+
+  if(!nokIds.length&&!qIds.length){
+    html+='<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:12px;color:#065f46;font-size:12px">Aucun manquement detecte. Le rapport sera favorable sans condition.</div>';
+  }
+
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid #f3f4f6">'
+    +'<button style="padding:7px 14px;border-radius:99px;font-size:11px;cursor:pointer;background:#c0392b;color:#fff;border:none;font-family:inherit" onclick="expDocx()">Exporter .docx officiel</button>'
+    +'<button style="padding:7px 14px;border-radius:99px;font-size:11px;cursor:pointer;background:#fff;color:#374151;border:1px solid #e5e7eb;font-family:inherit" onclick="GO(5)">Corriger les manquements</button>'
+    +'</div></div>';
+
+  var rpt=document.getElementById('RPT');
+  if(rpt) rpt.innerHTML=html;
+  var bd=document.getElementById('BDOCX');
+  if(bd) bd.disabled=false;
+  GO(6);
+}
+
+function expDocx(){
+  var zone=(document.getElementById('ZONE')||{}).value||'ZSBW';
+  var bat=_B;
+  var nom=(document.getElementById('NOM')||{}).value||'rapport';
+  var flags=[];
+  for(var k in _S){if(_S[k]==='nok'||_S[k]==='q') flags.push(k);}
+  fetch('/api/generate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      zone:zone,type_batiment:bat,nom:nom,
+      adresse:(document.getElementById('ADR')||{}).value||'',
+      commune:(document.getElementById('COM')||{}).value||'',
+      mo:(document.getElementById('DEM')||{}).value||'',
+      architecte:(document.getElementById('ARC')||{}).value||'',
+      ref_dossier:(document.getElementById('NREF')||{}).value||'',
+      agent:(document.getElementById('AGT')||{}).value||'',
+      flags:flags,
+    })
+  })
+  .then(function(r){
+    if(r.ok) return r.blob().then(function(b){
+      var u=URL.createObjectURL(b);
+      var a=document.createElement('a');
+      a.href=u;a.download='PreventFire_'+zone+'_'+bat+'_'+nom.replace(/\s+/g,'_')+'.docx';a.click();
+    });
+    else alert('Erreur export .docx');
+  })
+  .catch(function(e){alert('Erreur: '+e.message);});
+}
+
+function rstAll(){
+  _F=[];_D={};_S={};_B='BB';_FL='all';
+  document.getElementById('FI').value='';
+  var t=document.getElementById('TYPE');if(t) t.value='BB';
+  rnFL();drCL();
+  var d=document.getElementById('BDOCX');if(d) d.disabled=true;
+  GO(1);
+}
+
+
+function extractInfo(){
+  var btn=document.getElementById('BP1');
+  var sp=document.getElementById('SBP1');
+  if(btn) btn.disabled=true;
+  if(sp) sp.style.display='inline-block';
+
+  if(_F.length===0){GO(2);if(btn)btn.disabled=false;if(sp)sp.style.display='none';return;}
+
+  // Construire les images pour envoi au serveur
+  var images=[];
+  for(var i=0;i<_F.length&&i<5;i++){
+    var f=_F[i];var d=_D[f.name];
+    if(!d||!d.startsWith('data:')) continue;
+    var b64=d.split(',')[1];if(!b64) continue;
+    images.push({b64:b64,mime_type:f.type,name:f.name});
+  }
+
+  if(images.length===0){GO(2);if(btn)btn.disabled=false;if(sp)sp.style.display='none';return;}
+
+  // Appel via le serveur Flask (pas de CORS)
+  fetch('/api/extract',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({images:images})
+  })
+  .then(function(r){return r.json();})
+  .then(function(res){
+    if(res&&!res.error) fillForm(res);
+    if(btn) btn.disabled=false;
+    if(sp) sp.style.display='none';
+    GO(2);
+  })
+  .catch(function(){
+    if(btn) btn.disabled=false;
+    if(sp) sp.style.display='none';
+    GO(2);
+  });
+}
+
+function fillForm(res){
+  function set(id,val){var e=document.getElementById(id);if(e&&val) e.value=val;}
+  set('NOM',    res.nom_projet);
+  set('MDSC',   res.description_mission);
+  set('DEM',    res.demandeur);
+  set('REP',    res.representant);
+  set('ADR',    res.adresse);
+  set('COM',    res.commune);
+  set('ACC',    res.conditions_acces);
+  set('EAU',    res.ressources_eau||'Reseau public.');
+  set('VREF',   res.vref);
+  set('NREF',   res.nref);
+  set('ARC',    res.architecte);
+  set('PLANS',  res.plans_recus);
+  set('ANT',    res.antecedents||'Neant.');
+  set('HAU',    res.hauteur_h);
+
+  if(res.type_mission){
+    var sel=document.getElementById('MISS');
+    if(sel){
+      var opts=sel.options;
+      for(var i=0;i<opts.length;i++){
+        if(opts[i].text.toLowerCase().indexOf(res.type_mission.toLowerCase())>=0){sel.selectedIndex=i;break;}
+      }
+    }
+  }
+
+  if(res.type_batiment){
+    _B=res.type_batiment.toUpperCase()==='BM'?'BM':'BB';
+    var sel=document.getElementById('TYPE');
+    if(sel) sel.value=_B;
+  }
+
+  if(res.niveaux){
+    set('NSS',   res.niveaux.ss);
+    set('NRDC',  res.niveaux.rdc);
+    set('NR1',   res.niveaux.r1);
+    set('NR2',   res.niveaux.r2);
+    set('NR3',   res.niveaux.r3);
+    set('NTOIT', res.niveaux.toit);
+  }
+
+  if(res.hypotheses){
+    function ck(id,val){var e=document.getElementById(id);if(e) e.checked=!!val;}
+    ck('HL', res.hypotheses.logements);
+    ck('HC', res.hypotheses.commerces);
+    ck('HSS',res.hypotheses.ss);
+    ck('HP', res.hypotheses.parking);
+    ck('HA', res.hypotheses.ascenseur);
+    ck('HG', res.hypotheses.gaz);
+  }
+}
+
+drCL();
+</script>
+</body>
+</html>

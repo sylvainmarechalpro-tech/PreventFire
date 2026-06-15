@@ -1,0 +1,26 @@
+PREVENTFIRE PRO - INSTALLATION
+===============================
+
+ETAPE 1 - Extraire le ZIP
+   Clic droit sur le ZIP -> "Extraire tout"
+   Choisir un dossier simple comme C:\PreventFire\
+   (pas le Bureau, pas Telechargements)
+
+ETAPE 2 - Lancer l'installation
+   Ouvrir le dossier extrait
+   Double-cliquer sur install.bat
+
+ETAPE 3 - Configurer la cle API
+   Ouvrir config.json avec le Bloc-notes
+   Remplacer VOTRE_CLE_API_ANTHROPIC_ICI
+   par votre cle API (commence par sk-ant-...)
+   Obtenir une cle sur : https://console.anthropic.com
+
+ETAPE 4 - Lancer l'application
+   Double-cliquer sur preventfire.bat
+   L'interface s'ouvre dans votre navigateur
+
+EN CAS DE PROBLEME
+   Voir README.txt pour le detail
+   ou contacter le support
+

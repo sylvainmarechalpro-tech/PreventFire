@@ -1,0 +1,8 @@
+{
+  "api_key": "",
+  "zone_defaut": "ZSBW",
+  "agent_nom": "",
+  "agent_email": "",
+  "agent_tel": "",
+  "zones_actives": ["ZSBW", "NAGE"]
+}

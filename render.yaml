@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: preventfire
+    runtime: python
+    buildCommand: >
+      cd frontend && npm install && npm run build && cd ../backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-4-6
+      - key: MAX_PDF_PAGES
+        value: "4"
+      - key: PDF_RENDER_DPI
+        value: "120"

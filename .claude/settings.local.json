@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Process -Name \"node\" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 1; Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"cd C:\\\\PreventFire\\\\frontend; npm run dev\"; \"Frontend relancé\")"
+    ]
+  }
+}

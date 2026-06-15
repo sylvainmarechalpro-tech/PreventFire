@@ -1,0 +1,7 @@
+* { margin: 0; box-sizing: border-box; }
+body {
+  background: #E4E5DF;
+  font-family: 'Inter', system-ui, sans-serif;
+  padding: 20px;
+}
+#root { max-width: 1100px; margin: 0 auto; }

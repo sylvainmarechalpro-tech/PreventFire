@@ -383,14 +383,15 @@ def analyze():
 
     try:
         msg = client.messages.create(
-            model=MODEL, max_tokens=1500,
+            model=MODEL, max_tokens=3000,
             messages=[{"role": "user", "content": content_blocks + [{"type": "text", "text": prompt}]}],
         )
         text = "".join(b.text for b in msg.content if b.type == "text")
         parsed = extract_json(text)
         return jsonify({"synthese": parsed.get("synthese", ""), "observations": parsed.get("observations", [])})
     except Exception as exc:
-        return jsonify({"error": f"Échec de l'analyse : {exc}"}), 500
+        raw = locals().get("text", "")[:300]
+        return jsonify({"error": f"Échec de l'analyse : {exc}", "raw": raw}), 500
 
 
 @app.route("/api/extract", methods=["POST"])

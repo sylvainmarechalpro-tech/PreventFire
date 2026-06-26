@@ -30,7 +30,7 @@ DB_PATH  = BASE / "preventfire.db"
 PROJ_DIR = BASE.parent / "projets"
 PROJ_DIR.mkdir(exist_ok=True)
 
-client = Anthropic(api_key=API_KEY) if API_KEY else None
+client = Anthropic(api_key=API_KEY, timeout=90.0) if API_KEY else None
 
 # ── Textes complets des articles AR ──────────────────────────────────────────
 
@@ -373,9 +373,9 @@ def analyze():
         parsed = json.loads(text)
         return jsonify({"synthese": parsed.get("synthese", ""), "observations": parsed.get("observations", [])})
     except json.JSONDecodeError:
-        return jsonify({"error": "Réponse du modèle non exploitable (JSON invalide)."}), 502
+        return jsonify({"error": "Réponse du modèle non exploitable (JSON invalide)."}), 500
     except Exception as exc:
-        return jsonify({"error": f"Échec de l'analyse : {exc}"}), 502
+        return jsonify({"error": f"Échec de l'analyse : {exc}"}), 500
 
 
 @app.route("/api/extract", methods=["POST"])
@@ -426,7 +426,7 @@ Retourne UNIQUEMENT ce JSON sans markdown :
         text = re.sub(r"```json|```", "", text).strip()
         return jsonify(json.loads(text))
     except Exception as exc:
-        return jsonify({"error": str(exc)}), 502
+        return jsonify({"error": str(exc)}), 500
 
 
 @app.route("/api/analyze_plans", methods=["POST"])
@@ -497,7 +497,7 @@ Retourne UNIQUEMENT ce JSON sans markdown :
                 result["statuses"][aid] = "na"
         return jsonify(result)
     except Exception as exc:
-        return jsonify({"error": str(exc)}), 502
+        return jsonify({"error": str(exc)}), 500
 
 
 @app.route("/api/generate_text", methods=["POST"])

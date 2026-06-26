@@ -11,6 +11,6 @@ services:
       - key: ANTHROPIC_MODEL
         value: claude-sonnet-4-6
       - key: MAX_PDF_PAGES
-        value: "4"
+        value: "2"
       - key: PDF_RENDER_DPI
-        value: "120"
+        value: "72"

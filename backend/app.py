@@ -266,13 +266,13 @@ def pdf_to_image_blocks(pdf_bytes: bytes, max_pages: int = MAX_PAGES, dpi: int =
         matrix = fitz.Matrix(dpi / 72.0, dpi / 72.0)
         for page in doc[:max_pages]:
             pix = page.get_pixmap(matrix=matrix, alpha=False)
-            png = pix.tobytes("png")
+            jpeg = pix.tobytes("jpeg", jpg_quality=75)
             blocks.append({
                 "type": "image",
                 "source": {
                     "type": "base64",
-                    "media_type": "image/png",
-                    "data": base64.b64encode(png).decode("ascii"),
+                    "media_type": "image/jpeg",
+                    "data": base64.b64encode(jpeg).decode("ascii"),
                 },
             })
     finally:

@@ -5,6 +5,24 @@ Génération .docx, persistance SQLite des dossiers.
 """
 
 import base64, io, json, os, re, sqlite3, uuid
+
+
+def extract_json(text: str) -> dict:
+    """Extrait le premier objet JSON valide du texte, même entouré de markdown."""
+    text = re.sub(r"```json|```", "", text).strip()
+    # Cherche le premier { ... } englobant
+    start = text.find("{")
+    if start == -1:
+        raise ValueError("Aucun JSON trouvé dans la réponse")
+    depth = 0
+    for i, ch in enumerate(text[start:], start):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return json.loads(text[start:i+1])
+    raise ValueError("JSON incomplet dans la réponse")
 from datetime import datetime
 from pathlib import Path
 
@@ -369,11 +387,8 @@ def analyze():
             messages=[{"role": "user", "content": content_blocks + [{"type": "text", "text": prompt}]}],
         )
         text = "".join(b.text for b in msg.content if b.type == "text")
-        text = text.replace("```json", "").replace("```", "").strip()
-        parsed = json.loads(text)
+        parsed = extract_json(text)
         return jsonify({"synthese": parsed.get("synthese", ""), "observations": parsed.get("observations", [])})
-    except json.JSONDecodeError:
-        return jsonify({"error": "Réponse du modèle non exploitable (JSON invalide)."}), 500
     except Exception as exc:
         return jsonify({"error": f"Échec de l'analyse : {exc}"}), 500
 
@@ -423,8 +438,7 @@ Retourne UNIQUEMENT ce JSON sans markdown :
             messages=[{"role": "user", "content": content_blocks}],
         )
         text = "".join(b.text for b in msg.content if b.type == "text")
-        text = re.sub(r"```json|```", "", text).strip()
-        return jsonify(json.loads(text))
+        return jsonify(extract_json(text))
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -489,8 +503,7 @@ Retourne UNIQUEMENT ce JSON sans markdown :
             messages=[{"role": "user", "content": content_blocks}],
         )
         text = "".join(b.text for b in msg.content if b.type == "text")
-        text = re.sub(r"```json|```", "", text).strip()
-        result = json.loads(text)
+        result = extract_json(text)
         # Injecter les auto-NA
         if "statuses" in result:
             for aid in auto_na:

@@ -604,27 +604,27 @@ def analyze_plans():
     ids_str = "{\n" + ",\n".join([f'"{i}":"ok|nok|q"' for i in ids]) + "\n}"
 
     # Determiner les NA automatiquement selon hypotheses
-auto_na = set()
-if bat == "BB":
-    auto_na.update(["4.4.4","5.1.4","6.5.2","6.8.5.3"])
-if not hyp.get("ss", False):
-    auto_na.add("4.2.2.5")
-if not hyp.get("ascenseur", False):
-    auto_na.add("6.4")
-if not hyp.get("gaz", False):
-    auto_na.add("6.6")
-if not hyp.get("parking", False):
-    auto_na.update(["5.2.1","5.2.4"])
-if not hyp.get("logements", True):
-    auto_na.update(["3.3","AGW"])
+    auto_na = set()
+    if bat == "BB":
+        auto_na.update(["4.4.4","5.1.4","6.5.2","6.8.5.3"])
+    if not hyp.get("ss", False):
+        auto_na.add("4.2.2.5")
+    if not hyp.get("ascenseur", False):
+        auto_na.add("6.4")
+    if not hyp.get("gaz", False):
+        auto_na.add("6.6")
+    if not hyp.get("parking", False):
+        auto_na.update(["5.2.1","5.2.4"])
+    if not hyp.get("logements", True):
+        auto_na.update(["3.3","AGW"])
 
-# IDs a analyser = tous sauf les NA automatiques
-ids_to_analyze = [i for i in ids if i not in auto_na]
+    # IDs a analyser = tous sauf les NA automatiques
+    ids_to_analyze = [i for i in ids if i not in auto_na]
 
-# Construire ids_str uniquement pour les IDs a analyser
-ids_str_analyze = "{\n" + ",\n".join([f'"{i}":"ok|nok|q"' for i in ids_to_analyze]) + "\n}"
+    # Construire ids_str uniquement pour les IDs a analyser
+    ids_str_analyze = "{\n" + ",\n".join([f'"{i}":"ok|nok|q"' for i in ids_to_analyze]) + "\n}"
 
-prompt = f"""Tu es agent de prevention incendie belge expert en AR 07.07.1994.
+    prompt = f"""Tu es agent de prevention incendie belge expert en AR 07.07.1994.
 Projet: {nom} | Type: {bat} | Annexe: {"2/1" if bat == "BB" else "3/1"}
 
 REGLE FONDAMENTALE - Ce que tu PEUX lire sur les plans architecturaux:
